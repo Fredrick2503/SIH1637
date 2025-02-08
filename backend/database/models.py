@@ -1,9 +1,9 @@
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+
 
 # User Model (Farmers & Buyers)
-class User(AbstractUser):
+class User(models.models):
     USER_TYPES = [
         ('buyer', 'Buyer'),
         ('seller', 'Seller')
