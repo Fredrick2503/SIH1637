@@ -3,7 +3,7 @@ from django.db import models
 
 
 # User Model (Farmers & Buyers)
-class User(models.models):
+class User(models.Model):
     USER_TYPES = [
         ('buyer', 'Buyer'),
         ('seller', 'Seller')
