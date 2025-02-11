@@ -3,6 +3,14 @@ from django.db import models
 from users.models import User
 
 
+
+"""
+ER Diagram
+https://dbdiagram.io/d/67ab41be263d6cf9a0c3a0f6
+
+"""
+
+
 # # User Model (Farmers & Buyers)
 # class User(models.Model):
 #     USER_TYPES = [
