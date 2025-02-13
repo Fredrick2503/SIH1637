@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,11 +41,18 @@ INSTALLED_APPS = [
     'database',
     'users',
     'django.contrib.sites',
+    'import_export',
+
+    'rest_framework',
+    'rest_framework.authtoken',  # ✅ Add this line
+    'dj_rest_auth',  
+    'dj_rest_auth.registration',  
 
     # Allauth apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    # 'rest_auth.registration',
     
     # Include providers as needed
     'allauth.socialaccount.providers.google',  # Example for Google OAuth
@@ -52,6 +60,11 @@ INSTALLED_APPS = [
     # ... add more providers as necessary  
 ]
 
+# to enable jwt 
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_REFRESH': 'my-refresh-token'
+}
 #Make sure to set the SITE_ID (this is required by django.contrib.sites):
 SITE_ID = 1
 
@@ -64,18 +77,66 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # Optional: Allauth settings customization
-ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Or 'optional' depending on your needs
+# Tell allauth that the user model doesn't have a username field.
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" in production
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Or "none"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+# Do not require a username at signup.
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Or 'optional' depending on your needs
+
+# Use email as the unique identifier for authentication.
+ACCOUNT_LOGIN_METHODS = {'email'}
+SOCIALACCOUNT_ADAPTER = 'users.adapters.MySocialAccountAdapter'
+
+# Optionally, ensure email is required.
+ACCOUNT_EMAIL_REQUIRED = True
+
+# Optionally, specify a redirect URL after login.
+LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" if in production
+# SOCIALACCOUNT_PROVIDERS = {
+#     "google": {
+#         "APP": {
+#             "client_id": "677847920838-2ektcis4o99ch4g0rud69ur3jo99prob.apps.googleusercontent.com",
+#             "secret": "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",
+#             "key": ""
+#         },
+#         "SCOPE": [
+#             "profile",
+#             "email",
+#         ],
+#         "AUTH_PARAMS": {
+#             "access_type": "online",
+#         }
+#     }
+# }
 
 
 AUTH_USER_MODEL = 'users.User'
 
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,  # Ensures tokens are blacklisted on logout
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# REST_AUTH = {
+#     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+# }
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-        'allauth.account.middleware.AccountMiddleware', 
+    'allauth.account.middleware.AccountMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

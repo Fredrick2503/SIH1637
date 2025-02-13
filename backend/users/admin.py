@@ -40,20 +40,20 @@ class OrganizationProfileInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     model = User
-    list_display = ('email', 'phone_number', 'user_type', 'is_staff', 'is_active')
+    list_display = ('email', 'user_type', 'is_staff', 'is_active')
     list_filter = ('user_type', 'is_staff', 'is_active')
     fieldsets = (
-        (None, {'fields': ('email', 'phone_number', 'password', 'user_type')}),
+        (None, {'fields': ('email', 'password', 'user_type')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
         ('Dates', {'fields': ('date_joined',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'phone_number', 'password1', 'password2', 'user_type', 'is_staff', 'is_active'),
+            'fields': ('email', 'password1', 'password2', 'user_type', 'is_staff', 'is_active'),
         }),
     )
-    search_fields = ('email', 'phone_number')
+    search_fields = ('email',)
     ordering = ('email',)
 
     def get_inline_instances(self, request, obj=None):
