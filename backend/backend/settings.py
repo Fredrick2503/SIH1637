@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'database',
-    'users',
+    # 'users',
     'django.contrib.sites',
     'import_export',
 
@@ -58,6 +58,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',  # Example for Google OAuth
     # 'allauth.socialaccount.providers.facebook',  # Example for Facebook OAuth
     # ... add more providers as necessary  
+
+
+    'users.apps.UsersConfig',
 ]
 
 # to enable jwt 
@@ -122,15 +125,16 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,  # Ensures tokens are blacklisted on logout
+    "BLACKLIST_AFTER_ROTATION": True,  
+    "USER_ID_FIELD": "email"# Ensures tokens are blacklisted on logout
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-# REST_AUTH = {
-#     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
-# }
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+}
 
 
 MIDDLEWARE = [
