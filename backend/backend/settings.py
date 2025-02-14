@@ -100,22 +100,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 LOGIN_REDIRECT_URL = '/'
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" if in production
-# SOCIALACCOUNT_PROVIDERS = {
-#     "google": {
-#         "APP": {
-#             "client_id": "677847920838-2ektcis4o99ch4g0rud69ur3jo99prob.apps.googleusercontent.com",
-#             "secret": "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",
-#             "key": ""
-#         },
-#         "SCOPE": [
-#             "profile",
-#             "email",
-#         ],
-#         "AUTH_PARAMS": {
-#             "access_type": "online",
-#         }
-#     }
-# }
+
 
 
 AUTH_USER_MODEL = 'users.User'
