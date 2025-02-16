@@ -30,8 +30,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         (FARM, 'Farm'),
         (ORGANIZATION, 'Organization'),
     ]
+    phone_number = models.CharField(max_length=20, unique=False)
     email = models.EmailField(unique=True,primary_key=True)
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES)
+    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES,null=True)
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -51,7 +52,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class IndividualProfile(models.Model):
     """ Profile for individual farmers & buyers """
-    phone_number = models.CharField(max_length=20, unique=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="individual_profile")
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -66,7 +66,7 @@ class IndividualProfile(models.Model):
 class FarmProfile(models.Model):
     """ Profile for farms listing produce """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="farm_profile")
-    phone_number = models.CharField(max_length=20, unique=False)
+    # phone_number = models.CharField(max_length=20, unique=False)
     farm_name = models.CharField(max_length=255)
     farm_location = models.TextField()
     farm_size = models.FloatField(help_text="Size in acres or hectares", null=True, blank=True)
@@ -85,7 +85,7 @@ class OrganizationProfile(models.Model):
     organization_type = models.CharField(max_length=255, help_text="Wholesaler, Hotel, Retailer, etc.")
     organization_website = models.URLField(blank=True, null=True)
     organization_description = models.TextField(blank=True, null=True)
-    phone_number = models.CharField(max_length=20, unique=False)
+    # phone_number = models.CharField(max_length=20, unique=False)
 
     def __str__(self):
         return self.organization_name

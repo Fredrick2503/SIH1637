@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'database',
+    'marketplace',
     # 'users',
     'django.contrib.sites',
     'import_export',
@@ -64,16 +65,12 @@ INSTALLED_APPS = [
 ]
 
 # to enable jwt 
-REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_REFRESH': 'my-refresh-token'
-}
 #Make sure to set the SITE_ID (this is required by django.contrib.sites):
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
 
     # Allauth specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -101,6 +98,11 @@ LOGIN_REDIRECT_URL = '/'
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" if in production
 
+#for email in console
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = None
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
+
 
 
 AUTH_USER_MODEL = 'users.User'
@@ -119,6 +121,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+    'USE_JWT': True,
+    'JWT_AUTH_REFRESH': 'my-refresh-token'
 }
 
 

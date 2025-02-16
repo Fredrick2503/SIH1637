@@ -41,15 +41,12 @@
 # urls.py
 from django.contrib import admin
 from django.urls import path, include
-from users.views import GoogleLogin,ProfileDetailView ,CustomConfirmEmailView # and optionally your custom callback view
+
+# from rest_auth.registration.views import RegisterView, VerifyEmailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('dj_rest_auth.urls')),
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('accounts/google/login/', GoogleLogin.as_view(), name='google_login'),
-    path('accounts/profile/', ProfileDetailView.as_view(), name='profile-detail'),
-    path('auth/registration/account-confirm-email/<str:key>/', CustomConfirmEmailView.as_view(), name="account_confirm_email"),
-    # Optionally, include a callback URL if using one:
-    # path('accounts/google/callback/', MyOAuth2CallbackView.as_view(), name='socialaccount_callback'),
+    path('api/v1/auth/', include('users.urls')),
+    path('api/v1/marketspace/',include("marketplace.urls")),
 ]
+

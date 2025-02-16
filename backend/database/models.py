@@ -32,13 +32,41 @@ class Produce(models.Model):
 
     def __str__(self):
         return f"{self.name}-{self.variety}"
+    
+
+metrics=(("Kg","Kilogram"),("Q","Qunital"))
+
 # Produce Model (Farmers list items)
 class Listings(models.Model):
     id=models.UUIDField(default=uuid.uuid4,primary_key=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="produce_listings")
     produce = models.ForeignKey(Produce, on_delete=models.CASCADE, related_name="market_prices")
+    AskPrice=models.DecimalField(max_digits=10,decimal_places=2)
+    metrics=models.CharField(max_length=10,choices=metrics,default="Q")
+    Qty_available=models.DecimalField(max_digits=10,decimal_places=2)
     
-    
+class Location(models.Model):
+    State=models.CharField(max_length=25)
+    District=models.CharField(max_length=25)
+    Market=models.CharField(max_length=35)
+
+    def __str__(self):
+        return str(f"{self.State},{self.District}-{self.Market}")
+
+class MarketPrice(models.Model):
+    _id=models.UUIDField(default=uuid.uuid4,primary_key=True)
+    produce=models.ForeignKey(Produce,on_delete=models.CASCADE,related_name="market_price")
+    location=models.ForeignKey(Location,on_delete=models.CASCADE,related_name="market_location")
+    metrics=models.CharField(max_length=10,choices=metrics,default="Q")
+    modal_price=models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
+    max_price=models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
+    min_price=models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
+
+    def __str__(self):
+        return str(f"{str(self.produce)}")
+
+    def get_price(self):
+        return {"modal_price":self.modal_price,"min_price":self.min_price,"max_price":self.max_price}
 
 # Bids Model (Buyers placing offers)
 class Bid(models.Model):
