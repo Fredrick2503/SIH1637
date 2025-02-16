@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,44 +39,97 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'database',
-    'users',
+    'marketplace',
+    # 'users',
     'django.contrib.sites',
+    'import_export',
+
+    'rest_framework',
+    'rest_framework.authtoken',  # ✅ Add this line
+    'dj_rest_auth',  
+    'dj_rest_auth.registration',  
 
     # Allauth apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    # 'rest_auth.registration',
     
     # Include providers as needed
     'allauth.socialaccount.providers.google',  # Example for Google OAuth
     # 'allauth.socialaccount.providers.facebook',  # Example for Facebook OAuth
     # ... add more providers as necessary  
+
+
+    'users.apps.UsersConfig',
 ]
 
+# to enable jwt 
 #Make sure to set the SITE_ID (this is required by django.contrib.sites):
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
 
     # Allauth specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 # Optional: Allauth settings customization
-ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Or 'optional' depending on your needs
+# Tell allauth that the user model doesn't have a username field.
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" in production
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Or "none"
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+# Do not require a username at signup.
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Or 'optional' depending on your needs
+
+# Use email as the unique identifier for authentication.
+ACCOUNT_LOGIN_METHODS = {'email'}
+SOCIALACCOUNT_ADAPTER = 'users.adapters.MySocialAccountAdapter'
+
+# Optionally, ensure email is required.
+ACCOUNT_EMAIL_REQUIRED = True
+
+# Optionally, specify a redirect URL after login.
+LOGIN_REDIRECT_URL = '/'
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" if in production
+
+#for email in console
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = None
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
+
 
 
 AUTH_USER_MODEL = 'users.User'
 
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,  
+    "USER_ID_FIELD": "email"# Ensures tokens are blacklisted on logout
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+    'USE_JWT': True,
+    'JWT_AUTH_REFRESH': 'my-refresh-token'
+}
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-        'allauth.account.middleware.AccountMiddleware', 
+    'allauth.account.middleware.AccountMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
