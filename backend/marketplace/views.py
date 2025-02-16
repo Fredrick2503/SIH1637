@@ -114,3 +114,19 @@ class ListingDeleteView(DestroyAPIView):
             raise PermissionDenied("You do not have permission to delete this listing.")
 
         return listing
+    
+class BidDetailView(RetrieveAPIView):
+    """
+    API endpoint to retrieve a single bid by ID.
+    """
+    queryset = Bid.objects.all()
+    serializer_class = BidSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Public can view
+    authentication_classes = [JWTAuthentication]
+
+    def get_object(self):
+        """
+        Retrieve a single bid by its UUID.
+        """
+        bid_id = self.kwargs.get("bid_id")  # Get bid ID from URL
+        return get_object_or_404(Bid, id=bid_id)
