@@ -21,7 +21,7 @@ urlpatterns = [
     path("listings/<uuid:listing_id>/delete/", ListingDeleteView.as_view(), name="listing-delete"),  # Delete a listing
 
   
-    path("seller/listings/", SellerListingListView.as_view(), name="seller-listings"),
+    path("seller/listings/<str:pk>/",ListingView.as_view(), name="seller-listings"),
 
    
     path("user/<uuid:seller_id>/listings/", UserListingView.as_view(), name="user-listings"),

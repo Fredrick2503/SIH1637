@@ -50,3 +50,4 @@ class ListingsSerializer(serializers.ModelSerializer):
         data=super().to_representation(instance)
         data['produce']=str(Produce.objects.get(id=data.get('produce')))
         return data
+

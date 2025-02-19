@@ -1,20 +1,25 @@
 from django.shortcuts import render
-from database.models import Produce, MarketPrice, Location, Listings
+from database.models import Produce, MarketPrice, Location, Listings, Bid
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateAPIView, DestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, GenericAPIView
 from .serializers import ProduceListSerializer, MarketPriceSerializer, LocationSerializer, ListingsSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django_filters.rest_framework import DjangoFilterBackend
+#from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
+#from bid.serializers import BidSerializer
 
 # Create your views here.
 
 class ProduceListView(ListAPIView):
+    queryset = Produce.objects.all()
+    serializer_class = ProduceListSerializer
+
+class ProduceCreateView(CreateAPIView):
     queryset = Produce.objects.all()
     serializer_class = ProduceListSerializer
 
@@ -30,7 +35,15 @@ class LocationListView(ListAPIView):
     serializer_class = LocationSerializer
     queryset = Location.objects.all()
 
+class LocationCreateView(CreateAPIView):
+    serializer_class = LocationSerializer
+    queryset = Location.objects.all()
+
 class MarketPriceListView(ListAPIView):
+    serializer_class = MarketPriceSerializer
+    queryset = MarketPrice.objects.all()
+
+class MarketPriceCreateView(CreateAPIView):
     serializer_class = MarketPriceSerializer
     queryset = MarketPrice.objects.all()
 
@@ -42,19 +55,38 @@ class MarketPriceView(RetrieveAPIView):
         
     serializer_class = MarketPriceSerializer
 
-class SellerListingListView(ListCreateAPIView):
+class UserListingView(ListAPIView):
+    serializer_class = ListingsSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    filter_backends = [ OrderingFilter]
+    filterset_fields = ['produce', 'AskPrice', 'Qty_available', 'metrics']
+    ordering_fields = ['created_at', 'AskPrice', 'Qty_available']
+
+    def get_queryset(self):
+        seller_id = self.kwargs.get("seller_id")
+        seller = get_object_or_404(User, id=seller_id)
+        return Listings.objects.filter(seller=seller)
+    
+class SellerListingListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
         return Listings.objects.filter(seller_id=self.request.user)
-    
+        
+    serializer_class = ListingsSerializer
+
+class SellerListingCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def perform_create(self, serializer):
         serializer.save(seller_id=self.request.user)
         
     serializer_class = ListingsSerializer
 
-class ListingListView(ListCreateAPIView):
+class ListingListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -63,18 +95,21 @@ class ListingListView(ListCreateAPIView):
         
     serializer_class = ListingsSerializer
 
-class UserListingView(ListAPIView):
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin 
+class ListingView(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericAPIView):
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
+    queryset = Listings.objects.all()
     serializer_class = ListingsSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ['produce', 'AskPrice', 'Qty_available', 'metrics']
-    ordering_fields = ['created_at', 'AskPrice', 'Qty_available']
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
-    def get_queryset(self):
-        seller_id = self.kwargs.get("seller_id")
-        seller = get_object_or_404(User, id=seller_id)
-        return Listings.objects.filter(seller=seller)
 
 class ListingDetailView(RetrieveAPIView):
     queryset = Listings.objects.all()
@@ -114,19 +149,4 @@ class ListingDeleteView(DestroyAPIView):
             raise PermissionDenied("You do not have permission to delete this listing.")
 
         return listing
-    
-class BidDetailView(RetrieveAPIView):
-    """
-    API endpoint to retrieve a single bid by ID.
-    """
-    queryset = Bid.objects.all()
-    serializer_class = BidSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Public can view
-    authentication_classes = [JWTAuthentication]
 
-    def get_object(self):
-        """
-        Retrieve a single bid by its UUID.
-        """
-        bid_id = self.kwargs.get("bid_id")  # Get bid ID from URL
-        return get_object_or_404(Bid, id=bid_id)
