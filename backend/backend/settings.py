@@ -40,9 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'database',
     'marketplace',
+    'bid',
     # 'users',
     'django.contrib.sites',
-    #'import_export',
 
     'rest_framework',
     'rest_framework.authtoken',  # ✅ Add this line
@@ -85,6 +85,10 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # Do not require a username at signup.
 ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 
 # Use email as the unique identifier for authentication.
 ACCOUNT_LOGIN_METHODS = {'email'}
@@ -209,12 +213,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ),
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
