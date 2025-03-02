@@ -1,4 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
+
+*{
+  font-family: 'Roboto';
+}
+
+::-webkit-scrollbar{
+  width: 3px;
+  height: 3px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb{
+  width: 3px;
+  height: 3px;
+  background: #00000045;
+}
+::-webkit-scrollbar-thumb:hover{
+  width: 1px;
+  height: 1px;
+  background: #0000006f;
+}
+
+
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

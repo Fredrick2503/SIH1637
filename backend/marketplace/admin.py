@@ -5,4 +5,5 @@ from database.models import *
 
 admin.site.register(MarketPrice)
 admin.site.register(Location)
+admin.site.register(Listings)
 # admin.site.register(MarketPrice)

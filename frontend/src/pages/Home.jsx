@@ -1,5 +1,6 @@
 import React from 'react'
-import {Button,Input,Header} from "../components/components"
+import {Button,Header} from "../components/components"
+import { Input } from '../components/Input';
 
 export default function Home() {
   /*

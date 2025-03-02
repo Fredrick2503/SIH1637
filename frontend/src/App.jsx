@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -34,7 +34,6 @@ import './App.css'
 
 // export default App
 
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -45,8 +44,8 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
-import Listings from "./pages/Listings";
-import ListingDetail from "./pages/ListingDetail";
+import Listings from "./pages/buyer/Listings";
+import ListingDetail from "./pages/buyer/ListingDetail";
 import CreateListing from "./pages/CreateListing";
 import Transactions from "./pages/Transactions";
 import TransactionDetail from "./pages/TransactionDetail";
@@ -57,6 +56,14 @@ import DashboardFarmer from "./pages/DashboardFarmer";
 import DashboardRetailer from "./pages/DashboardRetailer";
 import NotFound from "./pages/NotFound";
 import ServerError from "./pages/ServerError";
+import CreateProfile from "./pages/CreateProfile";
+import BuyerHomePage from "./pages/buyer/Home";
+import MyBids from "./pages/buyer/MyBids";
+import MyTransactons from "./pages/buyer/MyTransactons";
+import Loader from "./pages/Loader";
+import Test from "./pages/Test";
+import BidDetail from "./pages/BidDetail";
+import AuthLayout from "./layouts/auth/AuthLayout";
 
 // Define Base URL
 export const BASE_URL = "http://localhost:5174";
@@ -66,37 +73,62 @@ const AppRouter = () => {
     <Router>
       <Routes>
         {/* Authentication */}
-        <Route path={`${BASE_URL}/login`} element={<Login />} />
-        <Route path={`${BASE_URL}/signup`} element={<Signup />} />
-        <Route path={`${BASE_URL}/forgot-password`} element={<ForgotPassword />} />
+        <Route element={<Loader />}>
+          <Route path={`login`} element={<Login />} />
+          <Route path={`signup`} element={<Signup />} />
+          <Route path={`profile_setup`} element={<CreateProfile />} />
+          <Route
+            path={`${BASE_URL}/forgot-password`}
+            element={<ForgotPassword />}
+          />
+          {/* Profile & User Settings */}
+          <Route element={<AuthLayout />}>
+            <Route path={`/`} element={<BuyerHomePage />} />
+            <Route path={`test`} element={<Test />} />
 
-        {/* Profile & User Settings */}
-        <Route path={`${BASE_URL}/profile`} element={<Profile />} />
-        <Route path={`${BASE_URL}/profile/edit`} element={<EditProfile />} />
+            {/* Home & Listings */}
+            {/* <Route path="/" element={<Home />} /> */}
+            <Route path={`marketspace/listings`} element={<Listings />} />
+            <Route
+              path={`dashboard/transactions`}
+              element={<MyTransactons />}
+            />
+            <Route
+              path={`/marketspace/listings/:id`}
+              element={<ListingDetail />}
+            />
 
-        {/* Home & Listings */}
-        <Route path="/" element={<Home />} />
-        <Route path={`${BASE_URL}/listings`} element={<Listings />} />
-        <Route path={`${BASE_URL}/listings/:productId`} element={<ListingDetail />} />
-        <Route path={`${BASE_URL}/listings/new`} element={<CreateListing />} />
+            {/* Transactions */}
+            <Route
+              path={`${BASE_URL}/transactions`}
+              element={<Transactions />}
+            />
+            <Route
+              path={`${BASE_URL}/transactions/:transactionId`}
+              element={<TransactionDetail />}
+            />
 
-        {/* Transactions */}
-        <Route path={`${BASE_URL}/transactions`} element={<Transactions />} />
-        <Route path={`${BASE_URL}/transactions/:transactionId`} element={<TransactionDetail />} />
+            {/* Messaging & Notifications */}
+            <Route path={`${BASE_URL}/messages`} element={<Messages />} />
+            <Route path={`${BASE_URL}/messages/:userId`} element={<Chat />} />
+            <Route
+              path={`${BASE_URL}/notifications`}
+              element={<Notifications />}
+            />
 
-        {/* Messaging & Notifications */}
-        <Route path={`${BASE_URL}/messages`} element={<Messages />} />
-        <Route path={`${BASE_URL}/messages/:userId`} element={<Chat />} />
-        <Route path={`${BASE_URL}/notifications`} element={<Notifications />} />
-
-        {/* Dashboards */}
-        <Route path={`${BASE_URL}/dashboard/farmer`} element={<DashboardFarmer />} />
-        <Route path={`${BASE_URL}/dashboard/retailer`} element={<DashboardRetailer />} />
-
-        {/* Error Pages */}
-        <Route path={`${BASE_URL}/404`} element={<NotFound />} />
-        <Route path={`${BASE_URL}/500`} element={<ServerError />} />
-        <Route path="*" element={<NotFound />} /> {/* Catch-all route */}
+            {/* Dashboards */}
+            <Route
+              path={`${BASE_URL}/dashboard/farmer`}
+              element={<DashboardFarmer />}
+            />
+            <Route path={`/dashboard/bids`} element={<MyBids />} />
+            <Route path={`dashboard/bids/:id`} element={<BidDetail />} />
+          </Route>
+          {/* Error Pages */}
+          <Route path={`${BASE_URL}/404`} element={<NotFound />} />
+          <Route path={`${BASE_URL}/500`} element={<ServerError />} />
+          <Route path="*" element={<NotFound />} /> {/* Catch-all route */}
+        </Route>
       </Routes>
     </Router>
   );
