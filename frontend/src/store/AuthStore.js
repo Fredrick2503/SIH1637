@@ -12,6 +12,10 @@ export const useUserStore = create(devtools(persist((set)=>(
         setlogin:(userdata)=>set(()=>({
             userData:userdata,
             IsAuthenticated:true,
+        })),
+        setlogout:(userdata)=>set(()=>({
+            userData:null,
+            IsAuthenticated:null,
         }))
     }
 )),

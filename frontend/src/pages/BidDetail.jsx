@@ -32,7 +32,7 @@ function BidDetail() {
           <p className=" font-norml text-gray-500">Bid ID: TR#1233456</p>
           <p className=" font-norml text-gray-500">Amount:</p>
           <p className="font-medium ">₹20,000</p>
-          <Stepper fields={["Pending", "Accepted", "Completed"]} />
+          <Stepper fields={["Pending", "Accepted", "Completed"]} step={2}/>
           {status && (
             <div
               className={`px-1.5 py-1 ${
