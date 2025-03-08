@@ -1,9 +1,10 @@
+from datetime import datetime
 from dj_rest_auth.registration.serializers import RegisterSerializer
 # from dj_rest_auth.registration.views import RegisterView
 from requests import HTTPError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import IndividualProfile, FarmProfile, OrganizationProfile
+from .models import *
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
@@ -51,92 +52,265 @@ class CustomRegisterSerializer(RegisterSerializer):
     
 
 
+# class ProfileSerializer(serializers.ModelSerializer):
+#     user_type = serializers.ChoiceField(choices=User.USER_TYPE_CHOICES, required=True)
+#     user_category = serializers.ChoiceField(choices=User.USER_CATEGORY, required=True)
+#     # phone_number = serializers.CharField(required=True)
+#     first_name = serializers.CharField(required=False, allow_blank=True)
+#     last_name = serializers.CharField(required=False, allow_blank=True)
+#     farmName = serializers.CharField(required=False, allow_blank=True)
+#     location = serializers.CharField(required=False, allow_blank=True)
+#     farmArea = serializers.FloatField(required=False, allow_null=True)
+#     organizationName = serializers.CharField(required=False, allow_blank=True)
+#     organizationType = serializers.CharField(required=False, allow_blank=True)
+#     about=serializers.CharField(required=False,allow_blank=True)
+#     tagline=serializers.CharField(required=False,allow_blank=True)
+#     profileImg=serializers.ImageField()
+#     heroImg=serializers.ImageField()
+
+#     class Meta:
+#         model = User
+#         fields = ['user_type','user_category','first_name', 'last_name', 'farmName', 'location', 'farmArea', 'organizationName', 'organizationType','about','tagline','profileImg','heroImg']
+
+#     def to_representation(self, instance):
+#         """Customize response data based on `user_type`"""
+#         data = super().to_representation(instance)
+#         data["email"]=instance.email
+#         data["phone_no"]=instance.phone_number
+#         data["joinedSince"]=instance.date_joined
+#         # Get the appropriate profile based on user_type
+#         if instance.user_type == User.PRODUCER:
+#             if instance.user_category==User.INDIVIDUAL:
+#                 profile = IndividualProducerProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     data['first_name'] = profile.first_name
+#                     data['last_name'] = profile.last_name
+#                     data['about']=profile.about
+#                     data['tagline']=profile.tagline
+#                     data['location'] = profile.location
+#                     data['farmArea'] = profile.farmArea
+#                     data['rating'] = profile.rating
+#                     data['profileImg']=profile.profileImg
+#                     data['heroImg']=profile.heroImg
+#             if instance.user_category==User.ORGANISATION:
+#                 profile = FarmProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     data['farmName'] = profile.farmName
+#                     data['farmArea'] = profile.farmArea
+#                     data['location'] = profile.location
+#                     data['about']=profile.about
+#                     data['tagline']=profile.tagline
+#                     data['rating'] = profile.rating
+#                     data['profileImg']=profile.profileImg
+#                     data['heroImg']=profile.heroImg
+
+        
+#         elif instance.user_type == User.BUYER:
+#             if instance.user_category==User.INDIVIDUAL:
+#                 profile = IndividualBuyerProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     data['first_name'] = profile.first_name
+#                     data['last_name'] = profile.last_name
+#                     data['about']=profile.about
+#                     data['tagline']=profile.tagline
+#                     data['location'] = profile.location
+#                     data['rating'] = profile.rating
+#                     data['profileImg']=profile.profileImg
+#                     data['heroImg']=profile.heroImg
+#             if instance.user_category==User.ORGANISATION:
+#                 profile = OrganizationProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     data['organizationName'] = profile.organizationName
+#                     data['organisationType'] = profile.organisationType
+#                     data['about']=profile.about
+#                     data['tagline']=profile.tagline
+#                     data['location'] = profile.location
+#                     data['rating'] = profile.rating
+#                     data['profileImg']=profile.profileImg
+#                     data['heroImg']=profile.heroImg
+                    
+
+#         return data
+
+
+#     def save_profile(self, instance, validated_data):
+#         user_type = validated_data.pop('user_type', None)
+#         user_category = validated_data.pop('user_category', None)
+#         # phone_number = validated_data.pop('phone_number', None)
+#         if instance.user_type == User.PRODUCER:
+#             if instance.user_category==User.INDIVIDUAL:
+#                 profile,_ = IndividualProducerProfile.objects.get_or_create(user=instance)
+#                 if profile:
+#                     profile['first_name'] = validated_data.get('first_name',profile.first_name)
+#                     profile['last_name'] = validated_data.get('last_name',profile.last_name)
+#                     profile['about']=validated_data.get('about',profile.about)
+#                     profile['tagline']=validated_data.get('tagline',profile.tagline)
+#                     profile['location'] = validated_data.get('location',profile.location)
+#                     profile['farmArea'] = validated_data.get('farmArea',profile.farmArea)
+                     
+#                     profile['profileImg']=validated_data.get('profileImg',profile.profileImg)
+#                     profile['heroImg']=validated_data.get('heroImg',profile.heroImg)
+#             if instance.user_category==User.ORGANISATION:
+#                 profile = FarmProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     profile['farmName'] = validated_data.get('farmName',profile.farmName)
+#                     profile['farmArea'] = validated_data.get('farmArea',profile.farmArea)
+#                     profile['location'] = validated_data.get('location',profile.location)
+#                     profile['about']=validated_data.get('about',profile.about)
+#                     profile['tagline']=validated_data.get('tagline',profile.tagline)
+                     
+#                     profile['profileImg']=validated_data.get('profileImg',profile.profileImg)
+#                     profile['heroImg']=validated_data.get('heroImg',profile.heroImg)
+
+        
+#         elif instance.user_type == User.BUYER:
+#             if instance.user_category==User.INDIVIDUAL:
+#                 profile = IndividualBuyerProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     profile['first_name'] = validated_data.get('first_name',profile.first_name)
+#                     profile['last_name'] = validated_data.get('last_name',profile.last_name)
+#                     profile['about']=validated_data.get("about",profile.about)
+#                     profile['tagline']=validated_data.get("tagline",profile.tagline)
+#                     profile['location'] = validated_data.get('location',profile.location)
+                     
+#                     profile['profileImg']=validated_data.get('profileImg',profile.profileImg)
+#                     profile['heroImg']=validated_data.get('heroImg',profile.heroImg)
+#             if instance.user_category==User.ORGANISATION:
+#                 profile = OrganizationProfile.objects.filter(user=instance).first()
+#                 if profile:
+#                     profile['organizationName'] = validated_data.get('organizationName',profile.organizationName)
+#                     profile['organisationType'] = validated_data.get('organisationType',profile.organisationType)
+#                     profile['about']=validated_data.get('about',profile.about)
+#                     profile['tagline']=validated_data.get('tagline',profile.tagline)
+#                     profile['location'] = validated_data.get('location',profile.location)
+#                     profile['profileImg']=validated_data.get('profileImg',profile.profileImg)
+#                     profile['heroImg']=validated_data.get('heroImg',profile.heroImg)
+        
+#         return instance
+
+#     def create(self, validated_data):
+#         return self.save_profile(self.context['request'].user, validated_data)
+    
+#     def update(self, instance, validated_data):
+#         restricted_fields = ['user_type', 'user_category','location','rating']
+#         for field in restricted_fields:
+#             if field in validated_data:
+#                 validated_data.pop(field)
+#         return self.save_profile(instance, validated_data)
+
+from rest_framework import serializers
+from .models import User, IndividualProducerProfile, IndividualBuyerProfile, FarmProfile, OrganizationProfile
+
 class ProfileSerializer(serializers.ModelSerializer):
-    user_type = serializers.ChoiceField(choices=User.USER_TYPE_CHOICES, required=True)
-    # phone_number = serializers.CharField(required=True)
+    user_type = serializers.ChoiceField(choices=User.USER_TYPE_CHOICES)
+    user_category = serializers.ChoiceField(choices=User.USER_CATEGORY)
     first_name = serializers.CharField(required=False, allow_blank=True)
     last_name = serializers.CharField(required=False, allow_blank=True)
-    farm_name = serializers.CharField(required=False, allow_blank=True)
-    farm_location = serializers.CharField(required=False, allow_blank=True)
-    farm_size = serializers.FloatField(required=False, allow_null=True)
-    organization_name = serializers.CharField(required=False, allow_blank=True)
-    organization_type = serializers.CharField(required=False, allow_blank=True)
-    organization_website = serializers.URLField(required=False, allow_blank=True, allow_null=True)
-    organization_description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    farmName = serializers.CharField(required=False, allow_blank=True)
+    location = serializers.CharField(required=False, allow_blank=True)
+    farmArea = serializers.FloatField(required=False)
+    organizationName = serializers.CharField(required=False, allow_blank=True)
+    organizationType = serializers.CharField(required=False, allow_blank=True)
+    about = serializers.CharField(required=False, allow_blank=True)
+    rating = serializers.FloatField(required=False)
+    tagline = serializers.CharField(required=False, allow_blank=True)
+    profileImg = serializers.ImageField(required=False, allow_null=True)
+    heroImg = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ['user_type', 'first_name', 'last_name', 'farm_name', 'farm_location', 'farm_size', 'organization_name', 'organization_type', 'organization_website', 'organization_description']
+        fields = [
+            'user_type', 'user_category', 'first_name', 'last_name', 'farmName', 'location',
+            'farmArea', 'organizationName', 'organizationType', 'about', 'tagline',
+            'profileImg', 'heroImg','rating'
+        ]
 
     def to_representation(self, instance):
         """Customize response data based on `user_type`"""
         data = super().to_representation(instance)
-        data["email"]=instance.email
-        data["phone_no"]=instance.phone_number
-        # Get the appropriate profile based on user_type
-        if instance.user_type == User.INDIVIDUAL:
-            profile = IndividualProfile.objects.filter(user=instance).first()
-            if profile:
-                data['first_name'] = profile.first_name
-                data['last_name'] = profile.last_name
-        
-        elif instance.user_type == User.FARM:
-            profile = FarmProfile.objects.filter(user=instance).first()
-            if profile:
-                data['farm_name'] = profile.farm_name
-                data['farm_location'] = profile.farm_location
-                data['farm_size'] = profile.farm_size
-        
-        elif instance.user_type == User.ORGANIZATION:
-            profile = OrganizationProfile.objects.filter(user=instance).first()
-            if profile:
-                data['organization_name'] = profile.organization_name
-                data['organization_type'] = profile.organization_type
-                data['organization_website'] = profile.organization_website
-                data['organization_description'] = profile.organization_description
+        data["email"] = instance.email
+        data["phone_no"] = instance.phone_number
+        data["joinedSince"] = datetime.date(instance.date_joined)
 
+        profile = None
+
+        if instance.user_type == User.PRODUCER:
+            if instance.user_category == User.INDIVIDUAL:
+                profile = IndividualProducerProfile.objects.filter(user=instance).first()
+            elif instance.user_category == User.ORGANISATION:
+                profile = FarmProfile.objects.filter(user=instance).first()
+
+        elif instance.user_type == User.BUYER:
+            if instance.user_category == User.INDIVIDUAL:
+                profile = IndividualBuyerProfile.objects.filter(user=instance).first()
+            elif instance.user_category == User.ORGANISATION:
+                profile = OrganizationProfile.objects.filter(user=instance).first()
+        # else:
+        #     data={}
+        #     data['msg']="Uninitalized User"
+        #     return data
+        if profile:
+            
+            # Assign values dynamically to avoid redundant code
+            for field in ['first_name', 'last_name', 'about', 'tagline', 'location', 'farmArea', 'organizationName', 'organizationType']:
+                if hasattr(profile, field):
+                    data[field] = getattr(profile, field)
+
+            # Handle image fields
+            data['profileImg'] = profile.profileImg.url if profile.profileImg else None
+            data['heroImg'] = profile.heroImg.url if profile.heroImg else None
         return data
-
 
     def save_profile(self, instance, validated_data):
         user_type = validated_data.pop('user_type', None)
-        # phone_number = validated_data.pop('phone_number', None)
-        
-        if not instance.user_type:
-            if user_type:
-                instance.user_type = user_type
+        user_category = validated_data.pop('user_category', None)
+
+        profile = None
+        if not (instance.user_type and instance.user_category):
+            if (user_type and user_category):
+                instance.user_type=user_type
+                instance.user_category=user_category
                 instance.save()
+        if instance.user_type == User.PRODUCER:
+            if instance.user_category == User.INDIVIDUAL:
+                profile, _ = IndividualProducerProfile.objects.get_or_create(user=instance)
+            elif instance.user_category == User.ORGANISATION:
+                profile, _ = FarmProfile.objects.get_or_create(user=instance)
+
+        elif instance.user_type == User.BUYER:
+            if instance.user_category == User.INDIVIDUAL:
+                profile, _ = IndividualBuyerProfile.objects.get_or_create(user=instance)
+            elif instance.user_category == User.ORGANISATION:
+                profile, _ = OrganizationProfile.objects.get_or_create(user=instance)
         
-        if instance.user_type == User.INDIVIDUAL:
-            profile, _ = IndividualProfile.objects.get_or_create(user=instance)
-            # profile.phone_number = phone_number
-            profile.first_name = validated_data.get('first_name', profile.first_name)
-            profile.last_name = validated_data.get('last_name', profile.last_name)
+        if profile:
+            # Update fields correctly
+            print(profile)
+            for field in ['first_name', 'last_name', 'about', 'tagline', 'location', 'farmArea', 'organizationName', 'organizationType']:
+                if field in validated_data:
+                    setattr(profile, field, validated_data[field])
+
+            # Handle images correctly
+            if 'profileImg' in validated_data:
+                profile.profileImg = validated_data['profileImg']
+            if 'heroImg' in validated_data:
+                profile.heroImg = validated_data['heroImg']
+
             profile.save()
-        elif instance.user_type == User.FARM:
-            profile, _ = FarmProfile.objects.get_or_create(user=instance)
-            # profile.phone_number = phone_number
-            profile.farm_name = validated_data.get('farm_name', profile.farm_name)
-            profile.farm_location = validated_data.get('farm_location', profile.farm_location)
-            profile.farm_size = validated_data.get('farm_size', profile.farm_size)
-            profile.save()
-        elif instance.user_type == User.ORGANIZATION:
-            profile, _ = OrganizationProfile.objects.get_or_create(user=instance)
-            # profile.phone_number = phone_number
-            profile.organization_name = validated_data.get('organization_name', profile.organization_name)
-            profile.organization_type = validated_data.get('organization_type', profile.organization_type)
-            profile.organization_website = validated_data.get('organization_website', profile.organization_website)
-            profile.organization_description = validated_data.get('organization_description', profile.organization_description)
-            profile.save()
-        
+
         return instance
 
     def create(self, validated_data):
+        print("here")
         return self.save_profile(self.context['request'].user, validated_data)
-    
-    def update(self, instance, validated_data):
-        return self.save_profile(instance, validated_data)
 
+    def update(self, instance, validated_data):
+        # Restrict updates on certain fields
+        restricted_fields = ['location', 'rating','joinedSince']
+        for field in restricted_fields:
+            validated_data.pop(field, None)
+
+        return self.save_profile(instance, validated_data)
 
 
 class CustomSocialLoginSerializer(BaseSocialLoginSerializer):
