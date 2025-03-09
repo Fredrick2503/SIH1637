@@ -112,7 +112,7 @@ export function Listingicon({ isactive = false }) {
           <rect x="0" y="0" width="14" height="14" rx="0" />
         </clipPath>
       </defs>
-      <g clip-path="url(#master_svg0_34_5379)">
+      <g clipPath="url(#master_svg0_34_5379)">
         <g transform="matrix(1,0,0,-1,0,28.6015625)">
           <g>
             <path
@@ -165,7 +165,7 @@ export function Homeicon({ isactive = false }) {
           <rect x="0" y="0" width="15.75" height="14" rx="0" />
         </clipPath>
       </defs>
-      <g clip-path="url(#master_svg0_34_5416)">
+      <g clipPath="url(#master_svg0_34_5416)">
         <g transform="matrix(1,0,0,-1,0,28.6015625)">
           <g>
             <path

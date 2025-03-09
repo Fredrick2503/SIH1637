@@ -42,7 +42,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
-import Profile from "./pages/Profile";
+import Profile from "./pages/buyer/profile";
 import EditProfile from "./pages/EditProfile";
 import Listings from "./pages/buyer/Listings";
 import ListingDetail from "./pages/buyer/ListingDetail";
@@ -85,6 +85,7 @@ const AppRouter = () => {
           <Route element={<AuthLayout />}>
             <Route path={`/`} element={<BuyerHomePage />} />
             <Route path={`test`} element={<Test />} />
+            <Route path={`profile`} element={<Profile />} />
 
             {/* Home & Listings */}
             {/* <Route path="/" element={<Home />} /> */}
