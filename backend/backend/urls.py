@@ -41,13 +41,14 @@
 # urls.py
 from django.contrib import admin
 from django.urls import path, include
-
-# from rest_auth.registration.views import RegisterView, VerifyEmailView
+from django.conf import settings
+from django.conf.urls.static import static
+# from rest_auth.regis\tration.views import RegisterView, VerifyEmailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('users.urls')),
     path('api/v1/marketspace/',include("marketplace.urls")),
     path('api/v1/bids/',include("bid.urls")),
-]
+]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 

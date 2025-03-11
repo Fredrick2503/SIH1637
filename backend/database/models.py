@@ -44,14 +44,31 @@ class Produce(models.Model):
 
 metrics=(("Kg","Kilogram"),("Q","Qunital"))
 
+
+
+
 # Produce Model (Farmers list items)
 class Listings(models.Model):
     id=models.UUIDField(default=uuid.uuid4,primary_key=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="produce_listings")
     produce = models.ForeignKey(Produce, on_delete=models.CASCADE, related_name="market_prices")
     AskPrice=models.DecimalField(max_digits=10,decimal_places=2)
+
     metrics=models.CharField(max_length=10,choices=metrics,default="Q")
     Qty_available=models.DecimalField(max_digits=10,decimal_places=2)
+
+class ListingImages(models.Model):
+    id=models.UUIDField(default=uuid.uuid4,primary_key=True)
+    Image=models.ImageField(upload_to="listings/images")
+    _for=models.ForeignKey(Listings,on_delete=models.CASCADE, related_name="listing_images")
+    def save(self, *args, **kwargs):
+        if self.Image:
+            id=uuid.uuid4()
+            ext = self.Image.name.split('.')[-1]  # Get file extension
+            new_filename = f"{id}.{ext}"  # Create new filename
+            self.id=id
+            self.Image.name = f"listings/images/{new_filename}"  # Rename the file
+        super().save(*args, **kwargs)
     
 class Location(models.Model):
     State=models.CharField(max_length=25)

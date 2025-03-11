@@ -45,8 +45,8 @@ Farmers often face challenges in accessing markets, leading to lower income due 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/farmers-market-connect.git
-   cd farmers-market-connect
+   git clone https://github.com/Fredrick2503/SIH1637.git
+   cd SIH1637
    ```
 
 2. **Backend Setup:**

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from datetime import timedelta
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -70,12 +71,13 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
-    # 'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 
     # Allauth specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+AUTH_USER_MODEL = 'users.User'
 # Optional: Allauth settings customization
 # ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Or 'optional' depending on your needs
 # Tell allauth that the user model doesn't have a username field.
@@ -86,12 +88,12 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # Do not require a username at signup.
 ACCOUNT_USERNAME_REQUIRED = False
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
+# ACCOUNT_AUTHENTICATION_METHOD = "email"
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_UNIQUE_EMAIL = True
 
 # Use email as the unique identifier for authentication.
-ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_LOGIN_METHODS = ('email',)
 SOCIALACCOUNT_ADAPTER = 'users.adapters.MySocialAccountAdapter'
 
 # Optionally, ensure email is required.
@@ -109,7 +111,6 @@ ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = None
 
 
 
-AUTH_USER_MODEL = 'users.User'
 
 
 SIMPLE_JWT = {
@@ -126,7 +127,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
     'USE_JWT': True,
-    'JWT_AUTH_REFRESH': 'my-refresh-token'
 }
 
 
@@ -221,3 +221,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
+
+MEDIA_URL='/media/'
+MEDIA_ROOT=BASE_DIR/"media"

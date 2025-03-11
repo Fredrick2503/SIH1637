@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, GenericAPIView
 from .serializers import ProduceListSerializer, MarketPriceSerializer, LocationSerializer, ListingsSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 #from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 # Create your views here.
 
 class ProduceListView(ListAPIView):
+    permission_classes=[AllowAny]
     queryset = Produce.objects.all()
     serializer_class = ProduceListSerializer
 
@@ -55,39 +56,8 @@ class MarketPriceView(RetrieveAPIView):
         
     serializer_class = MarketPriceSerializer
 
-class UserListingView(ListAPIView):
-    serializer_class = ListingsSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-    filter_backends = [ OrderingFilter]
-    filterset_fields = ['produce', 'AskPrice', 'Qty_available', 'metrics']
-    ordering_fields = ['created_at', 'AskPrice', 'Qty_available']
-
-    def get_queryset(self):
-        seller_id = self.kwargs.get("seller_id")
-        seller = get_object_or_404(User, id=seller_id)
-        return Listings.objects.filter(seller=seller)
-    
-class SellerListingListView(ListAPIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def get_queryset(self):
-        return Listings.objects.filter(seller_id=self.request.user)
-        
-    serializer_class = ListingsSerializer
-
-class SellerListingCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def perform_create(self, serializer):
-        serializer.save(seller_id=self.request.user)
-        
-    serializer_class = ListingsSerializer
-
 class ListingListView(ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
@@ -96,22 +66,28 @@ class ListingListView(ListAPIView):
     serializer_class = ListingsSerializer
 
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin 
-class ListingView(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericAPIView):
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [JWTAuthentication]
-    queryset = Listings.objects.all()
+class MyListingView(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin,ListModelMixin, DestroyModelMixin, GenericAPIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [JWTAuthentication]
+    def get_queryset(self):
+        return Listings.objects.all()
+        # return Listings.objects.filter(seller=self.request.user)
     serializer_class = ListingsSerializer
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        if kwargs.get("pk"):
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
 
-class ListingDetailView(RetrieveAPIView):
+class ListingView(RetrieveAPIView):
     queryset = Listings.objects.all()
     serializer_class = ListingsSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -120,33 +96,19 @@ class ListingDetailView(RetrieveAPIView):
     def get_object(self):
         listing_id = self.kwargs.get("listing_id")
         return get_object_or_404(Listings, id=listing_id)
+    
 
-class ListingUpdateView(RetrieveUpdateAPIView):
-    queryset = Listings.objects.all()
-    serializer_class = ListingsSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+from rest_framework.serializers import Serializer,FileField
+class UploadSerializer(Serializer):
+    file_uploaded = FileField()
+    class Meta:
+        fields = ['file_uploaded']
 
-    def get_object(self):
-        listing_id = self.kwargs.get("listing_id")
-        listing = get_object_or_404(Listings, id=listing_id)
-
-        if self.request.user != listing.seller:
-            raise PermissionDenied("You do not have permission to edit this listing.")
-
-        return listing
-
-class ListingDeleteView(DestroyAPIView):
-    queryset = Listings.objects.all()
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def get_object(self):
-        listing_id = self.kwargs.get("listing_id")
-        listing = get_object_or_404(Listings, id=listing_id)
-
-        if listing.seller != self.request.user:
-            raise PermissionDenied("You do not have permission to delete this listing.")
-
-        return listing
-
+class upload(CreateAPIView):
+    serializer_class=UploadSerializer
+    permission_classes=[AllowAny]
+    def post(self,request):
+        file_uploaded = request.FILES.get("img")
+        content_type = file_uploaded.content_type
+        print(vars(request),file_uploaded,content_type)
+        return JsonResponse({})

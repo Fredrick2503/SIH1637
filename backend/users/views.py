@@ -62,7 +62,9 @@ class ProfileView(generics.GenericAPIView, mixins.CreateModelMixin, mixins.Updat
     permission_classes = [IsAuthenticated]
     authentication_classes=[JWTAuthentication]
     serializer_class = ProfileSerializer
-
+    def get_object(self):
+        """Returns the authenticated user's instance"""
+        return self.request.user
     def get(self, request):
         """Retrieve the logged-in user's profile."""
         serializer = ProfileSerializer(request.user)
@@ -75,6 +77,9 @@ class ProfileView(generics.GenericAPIView, mixins.CreateModelMixin, mixins.Updat
     def put(self, request, *args, **kwargs):
         """Handles profile update"""
         return self.update(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        """Handles profile update"""
+        return self.partial_update(request, *args, **kwargs)
 
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
