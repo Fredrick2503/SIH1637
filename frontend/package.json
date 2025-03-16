@@ -10,14 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@preline/select": "^3.0.0",
     "@splinetool/react-spline": "^4.0.0",
     "@splinetool/runtime": "^1.9.72",
     "@tailwindcss/vite": "^4.0.4",
+    "framer-motion": "^12.5.0",
     "gsap": "^3.12.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "react-router": "^7.1.5",
+    "react-select": "^5.10.1",
     "tailwindcss": "^4.0.4",
     "zustand": "^5.0.3"
   },

@@ -21,7 +21,7 @@ export default function Login() {
       return res.data})
     setlogin(user.user)
     console.log(userData)
-    navigate("/");
+    navigate("/buyer/home");
   };
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center md:flex-row">

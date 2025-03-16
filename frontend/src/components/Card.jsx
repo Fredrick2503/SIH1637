@@ -1,9 +1,8 @@
 import React from 'react'
 
-const Card = ({ label = "", info_fields = [], status }) => {
+const Card = ({ label = "", info_fields = [], status ,className}) => {
     return (
-      <div className="w-[98%] flex flex-col rounded-xl shadow-[0px_0px_5px_rgba(0,0,0,0.19)]  mt-1.5 mb-1.5 relative">
-        <div className="px-3 py-2 rounded-xl relative">
+      <div className={"w-[100%] flex flex-col rounded-xl shadow-[0px_0px_5px_rgba(0,0,0,0.19)] relative px-3 py-2 "+className}>
           <div className="w-[85%]">
             <h1 className="text-[15px] font-medium">{label}</h1>
             {info_fields?.map((field) => (
@@ -39,7 +38,6 @@ const Card = ({ label = "", info_fields = [], status }) => {
             </div>
           )}
         </div>
-      </div>
     );
   };
 

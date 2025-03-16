@@ -7,7 +7,7 @@ function Loader() {
     useEffect(()=>{
         setTimeout(() => {
             setloading(false)
-        }, 2000);
+        }, 1000);
     })
   return (
     loading?<Loading/>:<Outlet/>

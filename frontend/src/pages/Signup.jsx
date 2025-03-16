@@ -9,10 +9,9 @@ import { Link, useNavigate } from "react-router";
 import { useUserStore } from "../store/AuthStore";
 import { auth } from "../utils/services";
 
-
 export default function Signup() {
   const { register, handleSubmit } = useForm();
-    const {userData,setlogin}=useUserStore()
+  const { userData, setlogin } = useUserStore();
   const navigate = useNavigate();
   const onSubmit = async (e) => {
     e.preventDefault;

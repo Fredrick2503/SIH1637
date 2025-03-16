@@ -32,7 +32,7 @@ export default function MyTransactons(){
           </div>
 
         
-      <div className=" h-80% w-full px-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6  ">
+      <div className=" h-80% w-full px-3 grid grid-cols-1 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6  ">
       {transactions.map((transaction) => (
                 <Card
                   label={transaction.amount}

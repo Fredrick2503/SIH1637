@@ -26,18 +26,19 @@ function BuyerHomePage() {
   return (
     <div className="w-screen h-screen flex flex-col items-center relative overflow-y-auto ">
       <Header />
-      <div className="w-full h-[100%] py-[80px] flex flex-col items-center">
+      <div className="w-full mt-[80px] h-full pb-[60px] flex flex-col items-center">
         <ProfileCard />
 
-        <div className="w-full h-[82%] flex flex-col md:flex-row items-center ">
+        <div className="w-full h-[82%] flex flex-col md:flex-row items-center pb-[55px] ">
           <div className="w-full h-[48%] px-3 py-2 flex flex-col justify-center items-center border-y-1  border-gray-300 mt-3 md:h-[100%] ">
             <div className="w-full flex flex-row justify-between px-3 py-2 ">
               <h1 className="font-medium">Bids</h1>
               <Link to="/dashboard/bids" className="font-medium">Veiw all</Link>
             </div>
-            <div className="w-[100%] flex flex-col items-center h-[100%] overflow-y-auto">
+            <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[100%] overflow-scroll snap-mandatory snap-y scroll-pt-2">
               {bids.map((bid) => (
                 <Card
+                className=" snap-start "
                 label={bid.listing.produce}
                 info_fields={[
                   { key: "Quantity", value: `${bid.quantity} ${bid.listing.metrics}` ,className:"text-sm"},
@@ -54,7 +55,7 @@ function BuyerHomePage() {
               <h1 className="font-medium">Transactions</h1>
               <Link to="/dashboard/transactions" className="font-medium">Veiw all</Link>
             </div>
-            <div className="w-[100%] flex flex-col items-center h-[100%] overflow-y-auto">
+            <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[100%] overflow-y-auto snap-y snap-mandatory scroll-pt-2 ">
               {transactions.map((transaction) => (
                 <Card
                   label={`₹${transaction.amount}`}
@@ -64,6 +65,7 @@ function BuyerHomePage() {
                     { key: null, value: convertime(transaction.created_at),className:"text-xs"},
                   ]}
                   status={transaction.status}
+                  className={" snap-start "}
                 />
               ))}
             </div>

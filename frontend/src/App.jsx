@@ -43,7 +43,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/buyer/profile";
-import EditProfile from "./pages/EditProfile";
+import EditProfile from "./pages/farmer/EditProfile";
 import Listings from "./pages/buyer/Listings";
 import ListingDetail from "./pages/buyer/ListingDetail";
 import CreateListing from "./pages/CreateListing";
@@ -64,6 +64,12 @@ import Loader from "./pages/Loader";
 import Test from "./pages/Test";
 import BidDetail from "./pages/BidDetail";
 import AuthLayout from "./layouts/auth/AuthLayout";
+import Farmerprofile from "./pages/farmer/profile";
+import LandingPage from "./pages/landing";
+import AboutPage from "./pages/About";
+import ProductPage from "./pages/ProductPage";
+import FarmerHome from "./pages/farmer/Home";
+import Form from "./components/Form";
 
 // Define Base URL
 export const BASE_URL = "http://localhost:5174";
@@ -72,24 +78,37 @@ const AppRouter = () => {
   return (
     <Router>
       <Routes>
-        {/* Authentication */}
         <Route element={<Loader />}>
-          <Route path={`login`} element={<Login />} />
-          <Route path={`signup`} element={<Signup />} />
-          <Route path={`profile_setup`} element={<CreateProfile />} />
+          <Route path={``} element={<LandingPage />} />
+          <Route path={`product`} element={<ProductPage />} />
+          <Route path={`about`} element={<AboutPage />} />
+          <Route element={<AuthLayout Authreq={false} />}>
+            <Route path={`login`} element={<Login />} />
+            <Route path={`signup`} element={<Signup />} />
+            <Route path={`profile_setup`} element={<CreateProfile />} />
+          </Route>
           <Route
             path={`${BASE_URL}/forgot-password`}
             element={<ForgotPassword />}
           />
           {/* Profile & User Settings */}
-          <Route element={<AuthLayout />}>
-            <Route path={`/`} element={<BuyerHomePage />} />
-            <Route path={`test`} element={<Test />} />
+          <Route element={<AuthLayout/>}>
+            <Route path="buyer">
+            <Route path={`home`} element={<BuyerHomePage />} />
             <Route path={`profile`} element={<Profile />} />
+            <Route path={`marketspace/listings`} element={<Listings />} />
+            </Route>
+            <Route path={`test`} element={<Test />} />
+            <Route path={`farmer/profile`} element={<Farmerprofile />} />
+            <Route path={`farmer/home`} element={<FarmerHome />} />
+            <Route path={`profile/form`} element={<EditProfile />} />
 
             {/* Home & Listings */}
             {/* <Route path="/" element={<Home />} /> */}
-            <Route path={`marketspace/listings`} element={<Listings />} />
+            <Route
+              path={`marketspace/listings/create`}
+              element={<CreateListing />}
+            />
             <Route
               path={`dashboard/transactions`}
               element={<MyTransactons />}

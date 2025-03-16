@@ -1,96 +1,34 @@
-import React, { use, useRef,useState } from "react";
-import { useId } from "react";
-// import { useForm } from "react-hook-form";
-import Container from "../components/container";
-import { Input } from "../components/Input";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Select from "react-select";
-// import SelectInstance from "react-select";
-import { useForm, Controller } from "react-hook-form";
-export default function CreateListing() {
-  const fields = ["FName", "LName", "Phone", "Email"];
-  const { register, handleSubmit, control } = useForm();
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
-  const selectRef = useRef(null);
-  const onSubmit = (data) => {
-    console.log("Selected option:", data.flavor);
-  };
-  const [imagePreview, setImagePreview] = useState(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-        setUploadSuccess(true); // Set success feedback
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import Container from "../../components/container";
+import { Input } from "../../components/Input";
+import { useNavigate } from "react-router";
+import React, {useState } from "react";
+function EditProfile() {
+    const navigate = useNavigate();
+      const [imagePreview, setImagePreview] = useState(null);
+      const [uploadSuccess, setUploadSuccess] = useState(false);
+    
+      const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagePreview(reader.result);
+            setUploadSuccess(true); // Set success feedback
+          };
+          reader.readAsDataURL(file);
+        }
       };
-      reader.readAsDataURL(file);
-    }
-  };
   return (
     <div className="w-screen h-screen flex flex-col items-center relative overflow-y-auto ">
       <Header />
-      <div className="w-full mt-5 pt-[80px] pb-[55px] flex flex-col items-center">
-        <Container className="w-[90%] md:w-[80%] my-5 ">
-          <h1 className="text-2xl ">Create Listing</h1>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Controller
-              name="flavor"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={options}
-                  placeholder="Select Produce"
-                  className="mt-2"
-                  classNamePrefix="react-select"
-                  styles={{
-                    control: (provided, state) => ({
-                      ...provided,
-                      backgroundColor: "white",
-                      borderColor: state.isFocused ? "black" : "gray",
-                      borderWidth: "2px",
-                      borderRadius: "0.375rem", // Tailwind: rounded-md
-                      padding: "2px",
-                      margin: "5px 0",
-                      boxShadow: "none",
-                      "&:hover": { borderColor: "black" },
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      backgroundColor: "white",
-                      borderRadius: "0.375rem", // Tailwind: rounded-md
-                      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                    }),
-                    option: (provided, { isFocused, isSelected }) => ({
-                      ...provided,
-                      backgroundColor: isSelected
-                        ? "black"
-                        : isFocused
-                        ? "#f3f4f6"
-                        : "white",
-                      color: isSelected ? "white" : "black",
-                      padding: "8px",
-                      cursor: "pointer",
-                      transition: "all 0.2s ease-in-out",
-                    }),
-                    singleValue: (provided) => ({
-                      ...provided,
-                      color: "black",
-                      fontWeight: "500",
-                    }),
-                  }}
-                />
-              )}
-            />
-            <div className="border border-gray-300 rounded-md p-2 text-gray-300 hover:text-black hover:border-black ">
+      <div className="w-full  pt-[80px] pb-[55px] flex flex-col items-center">
+        <Container className="w-[90%]  md:w-[80%] mt-5">
+            <h1>Edit Your Profile</h1>
+            <form action="">
+            <div className="border border-gray-300 rounded-md p-2 text-gray-500 hover:text-black hover:border-black ">
               <h1>Profile Image</h1>
               {imagePreview?<div className="flex flex-col items-center space-y-4">
                 {/* Image Preview */}
@@ -143,31 +81,29 @@ export default function CreateListing() {
                 </div>
               </div>}
             </div>
-            <Input label={"Farm Name"} />
-            <Input label={"Email"} type="email" disabled={true} />
-            <Input label="Phone" type="phone" />
-            <Input label="Tagline" />
-            <Input label="About" />
-            <Input label="Location" disabled={true} />
-            <Input label="Farm Area" />
-            <div className="w-full flex justify-evenly flex-grow ">
-              <input
-                type="submit"
-                value="Submit"
-                className="bg-black text-cyan-50 p-2 rounded-md w-min-fit w-[45%]  mt-3.5"
-              />
-              <button
-                type="button"
-                className="bg-transparent border-2 w-min-fit w-[45%] border-black text-black p-2 rounded-md mt-3.5"
-                onClick={() => navigate(-1)}
-              >
-                Back
-              </button>
-            </div>
-          </form>
+                <Input label={"Farm Name"}/>
+                <Input label={"Email"} type="email" disabled={true} />
+                <Input label="Phone" type="phone" />
+                <Input label="Tagline" />
+                <Input label="About" />
+                <Input label="Location" disabled={true}/>
+                <Input label="Farm Area" />
+                <div  className="w-full flex justify-evenly flex-grow ">
+                <input type="submit" value="Submit" className="bg-black text-cyan-50 p-2 rounded-md w-min-fit w-[45%]  mt-3.5" />
+                <button
+                  type="button"
+                  className="bg-transparent border-2 w-min-fit w-[45%] border-black text-black p-2 rounded-md mt-3.5"
+                  onClick={() =>( navigate(-1))}
+                >
+                  Back
+                </button></div>
+            </form>
         </Container>
+
       </div>
       <Footer />
     </div>
   );
 }
+
+export default EditProfile;

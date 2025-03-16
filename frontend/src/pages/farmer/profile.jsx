@@ -9,7 +9,7 @@ import phone from "../../assets/svg/phone.svg";
 import StatusBadge from "../../components/StatusBadge";
 import Edit from "../../assets/svg/edit.svg"
 import { Link } from "react-router";
-function profile() {
+function Farmerprofile() {
   return (
     <div className="w-screen h-screen">
       <Header />
@@ -21,7 +21,9 @@ function profile() {
               About Us
             </h1>
             <p>
-              Urban Bistro is a renowned restaurant specializing in contemporary cuisine. We are dedicated to creating memorable dining experiences by sourcing the highest-quality, locally grown produce and ingredients. Our passion for innovation and sustainability drives every decision in our kitchen.
+            Sunrise Farms has been serving local communities since 1985. We are committed to sustainable farming practices and 
+providing premium quality produce. Our rich history and innovative approach make us a trusted name in the industry. We 
+take pride in our commitment to environmental stewardship and community engagement.
             </p>
           </article>
           <article className="shadow-[0px_0px_5px_rgba(0,0,0,0.19)] rounded-xl p-4 w-full " >
@@ -66,7 +68,7 @@ function profile() {
             <h1 className=" text-xl font-semibold mb-2 " >Recent Bids</h1>
 
             <table className="w-full  overflow-hidden rounded-t-xl text-sm ">
-              <tr className="w-full my-2 mx-auto border-y-2 border-gray-300 font-normal  bg-gray-200 " >
+              <tr className="w-full my-2 mx-auto border-y-2 border-gray-200 font-normal  bg-gray-200 " >
                 <th className="font-medium py-2" >
                   Bid ID
                 </th>
@@ -83,7 +85,7 @@ function profile() {
                   Status
                 </th>
               </tr>
-              <tr className="w-full mx-auto border-y-2 border-gray-300 text-sm">
+              <tr className="w-full mx-auto border-y-2 border-gray-200 text-sm">
                 <td className="text-center mx-auto py-2" >
                   12345
                 </td>
@@ -100,7 +102,7 @@ function profile() {
                   <StatusBadge className={'mx-auto'} />
                 </td>
               </tr>
-              <tr className="w-full mx-auto border-y-2 border-gray-300 text-sm">
+              <tr className="w-full mx-auto border-y-2 border-gray-200 text-sm">
                 <td className="text-center mx-auto py-2" >
                   12345
                 </td>
@@ -126,15 +128,15 @@ function profile() {
   );
 }
 
-export default profile;
-
+export default Farmerprofile;
 const Hero = () => {
   return (
     <section
-      className={`w-screen bg-[linear-gradient(to_top,rgba(0,0,0,0.5),rgba(0,0,0,0.25),rgba(0,0,0,0)),url('https://sugarandcream.co/wp-content/uploads/2020/04/pic6-6.jpg')] bg-blend-soft-light bg-center bg-no-repeat bg-cover  h-min-fit pt-[200px] relative `}
+      className={`w-screen bg-blend-multiply bg-black/25  h-min-fit pt-[200px] relative b`}
     >
+        <img src="https://media.istockphoto.com/id/1927582544/video/drone-shot-of-a-farm.jpg?s=640x640&k=20&c=cC_X2EcdjVf3mTPhYPE7Yo2cTNTbXTPXF71iXVV--ZM=" alt="" className="w-full h-full absolute top-0  -z-10" />
       <article className=" w-fit px-6 py-5 flex flex-col gap-1">
-        <h1 className=" text-3xl font-medium text-white">{"Urban Bistro"}</h1>
+        <h1 className=" text-3xl font-medium text-white">{"Green Farms"}</h1>
         <p className="text-sm text-white font-light">{"Where Every Dish Tells a Story"}</p>
         <div className="flex flex-row gap-3 h-[12px] items-center ">
           <span

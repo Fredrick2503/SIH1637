@@ -1,13 +1,9 @@
 import React from "react";
-import bidsvg from "../assets/svg/bid.svg";
-// import profilesvg from "../assets/svg/profile.svg";
-import homesvg from "../assets/svg/home.svg";
-import searchsvg from "../assets/svg/search.svg";
 import { Link, NavLink } from "react-router";
 export default function Footer() {
   return (
     <footer className="w-screen h-[50px] fixed bottom-0 py-2  shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-white ">
-      <ul className="w-full flex flex-row justify-evenly">
+      <ul className="w-full flex flex-row justify-evenly items-center">
         <li className=" flex flex-col justify-center items-center ">
           <NavLink
             to="/"
@@ -16,7 +12,13 @@ export default function Footer() {
             {({ isActive, isPending, isTransitioning }) => (
               <>
                 <Homeicon isactive={isActive} />
-                <p className={isActive?"text-black font-normal ":"text-[#9CA3AF]"} >Home</p>{" "}
+                <p
+                  className={
+                    `${isActive ? "text-black font-normal " : "text-[#9CA3AF]"} text-xs font-extralight `
+                  }
+                >
+                  Home
+                </p>{" "}
               </>
             )}
           </NavLink>
@@ -29,7 +31,13 @@ export default function Footer() {
             {({ isActive, isPending, isTransitioning }) => (
               <>
                 <Listingicon isactive={isActive} />
-                <p className={isActive?"text-black font-normal ":"text-[#9CA3AF]"} >Listings</p>
+                <p
+                  className={
+                    `${isActive ? "text-black font-normal " : "text-[#9CA3AF]"} text-xs font-extralight `
+                  }
+                >
+                  Listings
+                </p>
               </>
             )}
           </NavLink>
@@ -37,12 +45,18 @@ export default function Footer() {
         <li className=" flex flex-col justify-center items-center ">
           <NavLink
             to="/dashboard/bids"
-            className=" flex flex-col justify-center items-center text-sm font-extralight "
+            className=" flex flex-col justify-center items-center "
           >
             {({ isActive, isPending, isTransitioning }) => (
               <>
                 <Bidicon isactive={isActive} />
-                <p className={isActive?"text-black font-normal ":"text-[#9CA3AF]"} >Bids</p>{" "}
+                <p
+                  className={
+                    `${isActive ? "text-black font-normal " : "text-[#9CA3AF]"} text-xs font-extralight `
+                  }
+                >
+                  Bids
+                </p>{" "}
               </>
             )}
           </NavLink>
@@ -55,7 +69,13 @@ export default function Footer() {
             {({ isActive, isPending, isTransitioning }) => (
               <>
                 <Profileicon isactive={isActive} />
-                <p className={isActive?"text-black font-normal ":"text-[#9CA3AF]"} >Profile</p>{" "}
+                <p
+                  className={
+                    `${isActive ? "text-black font-normal " : "text-[#9CA3AF]"} text-xs font-extralight `
+                  }
+                >
+                  Profile
+                </p>{" "}
               </>
             )}
           </NavLink>
@@ -98,33 +118,45 @@ export function Profileicon({ isactive = false }) {
 }
 export function Listingicon({ isactive = false }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      fill="none"
-      version="1.1"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-    >
-      <defs>
-        <clipPath id="master_svg0_34_5379">
-          <rect x="0" y="0" width="14" height="14" rx="0" />
-        </clipPath>
-      </defs>
-      <g clipPath="url(#master_svg0_34_5379)">
-        <g transform="matrix(1,0,0,-1,0,28.6015625)">
-          <g>
-            <path
-              d="M11.375,22.61328125Q11.3477,20.69922125,10.2812,19.25000125L13.7539,15.80469125Q14,15.53125125,14,15.17578125Q14,14.82031225,13.7539,14.54687525Q13.4805,14.30078125,13.125,14.30078125Q12.7695,14.30078125,12.4961,14.54687525L9.05078,18.01953125Q7.60156,16.95312125,5.6875,16.92578125Q3.28125,16.98047125,1.66797,18.59375125Q0.0546875,20.20703125,0,22.61328125Q0.0546875,25.01958125,1.66797,26.63278125Q3.28125,28.24608125,5.6875,28.30078125Q8.09375,28.24608125,9.70703,26.63278125Q11.3203,25.01958125,11.375,22.61328125ZM5.6875,18.67578125Q6.75391,18.67578125,7.65625,19.19531125Q8.55859,19.71484125,9.10547,20.64453125Q9.625,21.57422125,9.625,22.61328125Q9.625,23.65234125,9.10547,24.58198125Q8.55859,25.511681250000002,7.65625,26.03128125Q6.75391,26.55078125,5.6875,26.55078125Q4.62109,26.55078125,3.71875,26.03128125Q2.81641,25.511681250000002,2.26953,24.58198125Q1.75,23.65234125,1.75,22.61328125Q1.75,21.57422125,2.26953,20.64453125Q2.81641,19.71484125,3.71875,19.19531125Q4.62109,18.67578125,5.6875,18.67578125Z"
-              fill={isactive ? "#000" : "#9CA3AF"}
-              fillOpacity="1"
-              // style="mix-blend-mode:passthrough"
-            />
-          </g>
-        </g>
-      </g>
-    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="12pt" height="12pt" viewBox="0 0 200.000000 282.000000" preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,282.000000) scale(0.100000,-0.100000)" fill={isactive ? "#000" : "#9CA3AF"} stroke="none">
+<path d="M1806 2620 c-49 -520 -181 -862 -466 -1202 -43 -53 -193 -207 -332 -344 -139 -136 -246 -243 -238 -238 738 517 934 704 1131 1079 l48 90 -10 75 c-26 210 -83 499 -117 590 -7 20 -10 11 -16 -50z"/>
+<path d="M1310 2206 l-115 -73 -11 -80 c-6 -44 -24 -129 -39 -189 -77 -309 -203 -553 -480 -934 -67 -91 -131 -181 -144 -200 l-23 -35 32 35 c423 464 607 696 706 892 52 103 112 260 138 361 25 95 60 286 54 292 -2 2 -55 -29 -118 -69z"/>
+<path d="M625 1804 c-55 -36 -120 -83 -145 -104 l-45 -38 -1 -159 c-1 -252 -29 -420 -143 -863 -34 -129 -61 -237 -61 -240 1 -13 92 154 182 334 191 382 276 627 314 906 15 116 18 230 6 230 -4 0 -53 -30 -107 -66z"/>
+<path d="M1864 1280 c-170 -150 -358 -267 -744 -460 -327 -164 -541 -288 -655 -381 -46 -37 -49 -38 115 36 148 68 447 173 709 250 235 68 435 141 543 196 35 18 37 22 57 111 24 103 61 311 57 315 -2 2 -38 -28 -82 -67z"/>
+<path d="M136 1170 c-53 -179 -65 -422 -31 -660 30 -213 29 -215 55 260 12 221 12 421 1 439 -7 10 -14 0 -25 -39z"/>
+<path d="M1415 464 c-110 -12 -283 -32 -384 -44 -101 -12 -234 -32 -295 -46 -123 -27 -294 -72 -313 -82 -6 -4 113 -7 265 -7 200 0 327 -5 458 -19 205 -21 198 -23 304 60 72 55 188 163 175 162 -5 0 -100 -11 -210 -24z"/>
+<path d="M231 191 c-9 -6 2 -12 39 -20 104 -22 227 -42 325 -52 103 -10 323 -2 308 11 -11 11 -209 48 -318 60 -110 12 -335 13 -354 1z"/>
+</g>
+</svg>
+    // <svg
+    //   xmlns="http://www.w3.org/2000/svg"
+    //   xmlnsXlink="http://www.w3.org/1999/xlink"
+    //   fill="none"
+    //   version="1.1"
+    //   width="14"
+    //   height="14"
+    //   viewBox="0 0 14 14"
+    // >
+    //   <defs>
+    //     <clipPath id="master_svg0_34_5379">
+    //       <rect x="0" y="0" width="14" height="14" rx="0" />
+    //     </clipPath>
+    //   </defs>
+    //   <g clipPath="url(#master_svg0_34_5379)">
+    //     <g transform="matrix(1,0,0,-1,0,28.6015625)">
+    //       <g>
+    //         <path
+    //           d="M11.375,22.61328125Q11.3477,20.69922125,10.2812,19.25000125L13.7539,15.80469125Q14,15.53125125,14,15.17578125Q14,14.82031225,13.7539,14.54687525Q13.4805,14.30078125,13.125,14.30078125Q12.7695,14.30078125,12.4961,14.54687525L9.05078,18.01953125Q7.60156,16.95312125,5.6875,16.92578125Q3.28125,16.98047125,1.66797,18.59375125Q0.0546875,20.20703125,0,22.61328125Q0.0546875,25.01958125,1.66797,26.63278125Q3.28125,28.24608125,5.6875,28.30078125Q8.09375,28.24608125,9.70703,26.63278125Q11.3203,25.01958125,11.375,22.61328125ZM5.6875,18.67578125Q6.75391,18.67578125,7.65625,19.19531125Q8.55859,19.71484125,9.10547,20.64453125Q9.625,21.57422125,9.625,22.61328125Q9.625,23.65234125,9.10547,24.58198125Q8.55859,25.511681250000002,7.65625,26.03128125Q6.75391,26.55078125,5.6875,26.55078125Q4.62109,26.55078125,3.71875,26.03128125Q2.81641,25.511681250000002,2.26953,24.58198125Q1.75,23.65234125,1.75,22.61328125Q1.75,21.57422125,2.26953,20.64453125Q2.81641,19.71484125,3.71875,19.19531125Q4.62109,18.67578125,5.6875,18.67578125Z"
+    //           fill={isactive ? "#000" : "#9CA3AF"}
+    //           fillOpacity="1"
+    //           // style="mix-blend-mode:passthrough"
+    //         />
+    //       </g>
+    //     </g>
+    //   </g>
+    // </svg>
   );
 }
 export function Bidicon({ isactive = false }) {
