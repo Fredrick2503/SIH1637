@@ -1,5 +1,5 @@
 from django.contrib import admin
-from database.models import *
+from .models import Produce, MarketPrice, Location, Listings, ListingImages
 # Register your models here.
 
 

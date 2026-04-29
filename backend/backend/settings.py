@@ -39,13 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'database',
+    'orders',
     'marketplace',
     'bid',
     # 'users',
     'django.contrib.sites',
 
     'rest_framework',
+    'drf_spectacular',
     'rest_framework.authtoken',  # ✅ Add this line
     'dj_rest_auth',  
     'dj_rest_auth.registration',  
@@ -226,8 +227,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Marketspace API',
+    'DESCRIPTION': 'API documentation for Marketspace',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/"media"

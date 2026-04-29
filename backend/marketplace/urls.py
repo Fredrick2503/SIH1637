@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from orders.views import TransactionListView
 
 urlpatterns = [
     
@@ -25,4 +26,7 @@ urlpatterns = [
 
    
     path("upload", upload.as_view(), name="user-listings"),
+    
+    # Transactions (Proxied to orders app)
+    path("transactions/", TransactionListView.as_view(), name="transactions"),
 ]

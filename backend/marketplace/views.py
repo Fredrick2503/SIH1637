@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from database.models import Produce, MarketPrice, Location, Listings, Bid
+from .models import Produce, MarketPrice, Location, Listings
+from orders.models import Bid
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, GenericAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, GenericAPIView, ListCreateAPIView
 from .serializers import ProduceListSerializer, MarketPriceSerializer, LocationSerializer, ListingsSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -56,12 +57,13 @@ class MarketPriceView(RetrieveAPIView):
         
     serializer_class = MarketPriceSerializer
 
-class ListingListView(ListAPIView):
-    permission_classes = [AllowAny]
+class ListingListView(ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        return Listings.objects.all()
+        # Only show listings that don't have an accepted or completed bid
+        return Listings.objects.exclude(bid__status__in=['accepted', 'completed']).distinct()
         
     serializer_class = ListingsSerializer
 
@@ -71,7 +73,7 @@ class MyListingView(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin,ListM
     authentication_classes = [JWTAuthentication]
     def get_queryset(self):
         # return Listings.objects.all()
-        return Listings.objects.filter(seller=self.request.user)
+        return Listings.objects.filter(seller=self.request.user).exclude(bid__status__in=['accepted', 'completed']).distinct()
     serializer_class = ListingsSerializer
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)

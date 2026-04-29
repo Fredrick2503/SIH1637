@@ -8,9 +8,10 @@ import farmersvg from "../assets/img/SVG@4xa.png";
 import indisvg from "../assets/img/indi@4x.png";
 import orgsvg from "../assets/img/org@4x.png";
 import { set, useForm, useWatch } from "react-hook-form";
-import { auth } from "../utils/services";
+import { AuthApi } from "../api/auth.api";
 import { Link, useNavigate } from "react-router";
 import { useUserStore } from "../store/AuthStore";
+import toast from "react-hot-toast";
 
 function CreateProfile() {
   const {setlogin}=useUserStore()
@@ -19,7 +20,7 @@ function CreateProfile() {
       individual: 
         [{key:"first_name",label:"First Name",type:"text"},
         {key:"last_name",label:"Last Name",type:"text"},
-        {key:"phone_no",
+        {key:"phone_number",
           label:"Phone",type:"phone"
         },
         {key:"about",
@@ -41,7 +42,7 @@ function CreateProfile() {
       ,
       organisation: [
         {key:"farmName",label:"Farm Name",type:"text"},
-        {key:"phone_no",
+        {key:"phone_number",
           label:"Phone",type:"phone"
         },
         {key:"about",
@@ -66,7 +67,7 @@ function CreateProfile() {
       individual: 
       [{key:"first_name",label:"First Name",type:"text"},
       {key:"last_name",label:"Last Name",type:"text"},
-      {key:"phone_no",
+      {key:"phone_number",
         label:"Phone",type:"phone"
       },
       {key:"about",
@@ -83,8 +84,8 @@ function CreateProfile() {
       }]
     ,
     organisation: [
-      {key:"organisationName",label:"Organisation Name",type:"text"},
-      {key:"phone_no",
+      {key:"organizationName",label:"Organisation Name",type:"text"},
+      {key:"phone_number",
         label:"Phone",type:"phone"
       },
       {key:"about",
@@ -121,13 +122,28 @@ function CreateProfile() {
     step > 1 ? setstep(step - 1) : "";
   };
   const onSubmit = async (e) => {
-    console.log(e);
-    
-    const data = await auth.signup(e);
-    if (data){
-      console.log(data);
-      setlogin(data.user)
-      navigate("/dashboard");
+    if (e.password1 !== e.password2) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+    try {
+      const data = await AuthApi.signup(e);
+      if (data) {
+        console.log(data);
+        setlogin(data.user, { access: data.access, refresh: data.refresh });
+        toast.success("Profile created successfully!");
+        
+        // Redirect based on user role
+        if (data.user.role === "producer") {
+          navigate("/farmer/home");
+        } else {
+          navigate("/buyer/home");
+        }
+      }
+    } catch (error) {
+      console.error("Signup failed", error);
+      const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : "Signup failed. Please try again.";
+      toast.error(errorMsg);
     }
   };
   return (

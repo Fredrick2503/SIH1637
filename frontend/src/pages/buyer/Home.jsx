@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { resource } from "../../utils/services";
+import { MarketplaceApi } from "../../api/marketplace.api";
+import { BidsApi } from "../../api/bids.api";
 import { useUserStore } from "../../store/AuthStore";
-import logo from "../../assets/img/Farm2Biz@4x.png";
-import bidsvg from "../../assets/svg/bid.svg";
-import profilesvg from "../../assets/svg/profile.svg";
-import homesvg from "../../assets/svg/home.svg";
-import searchsvg from "../../assets/svg/search.svg";
 import { useNavigate } from "react-router";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
@@ -17,144 +13,139 @@ function BuyerHomePage() {
   const [transactions, settransactions] = useState([]);
 
   useEffect(() => {
-    setbids(resource.getbids());
-    settransactions(resource.gettransactions());
-    console.log(bids);
+    (async () => { setbids(await BidsApi.getBids()); })();
+    (async () => { settransactions(await MarketplaceApi.getTransactions()); })();
   }, []);
-  console.log(bids);
-  console.log(resource.getbids());
-  return (
-    <div className="w-screen h-screen flex flex-col items-center relative overflow-y-auto ">
-      <Header />
-      <div className="w-full mt-[80px] h-full pb-[60px] flex flex-col items-center">
-        <ProfileCard />
 
-        <div className="w-full h-[82%] flex flex-col md:flex-row items-center pb-[55px] ">
-          <div className="w-full h-[48%] px-3 py-2 flex flex-col justify-center items-center border-y-1  border-gray-300 mt-3 md:h-[100%] ">
-            <div className="w-full flex flex-row justify-between px-3 py-2 ">
-              <h1 className="font-medium">Bids</h1>
-              <Link to="/dashboard/bids" className="font-medium">Veiw all</Link>
-            </div>
-            <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[100%] overflow-scroll snap-mandatory snap-y scroll-pt-2">
-              {bids.map((bid) => (
-                <Card
-                className=" snap-start "
-                label={bid.listing.produce}
-                info_fields={[
-                  { key: "Quantity", value: `${bid.quantity} ${bid.listing.metrics}` ,className:"text-sm"},
-                  { key: "Bid price", value: bid.bid_price ,className:"text-sm"},
-                  { key: null, value: convertime(bid.created_at),className:"text-xs"},
-                ]}
-                status={bid.status}
-              />
-              ))}
-            </div>
-          </div>
-          <div className="w-full h-[48%] px-3 py-2 flex flex-col justify-center items-center border-y-1  border-gray-300 md:h-[100%] md:mt-3 ">
-            <div className="w-full flex flex-row justify-between px-3 py-2 ">
-              <h1 className="font-medium">Transactions</h1>
-              <Link to="/dashboard/transactions" className="font-medium">Veiw all</Link>
-            </div>
-            <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[100%] overflow-y-auto snap-y snap-mandatory scroll-pt-2 ">
-              {transactions.map((transaction) => (
-                <Card
-                  label={`₹${transaction.amount}`}
-                  info_fields={[
-                    // { key: "Bid Quantity", value: bid.quantity },
-                    { key: "PID", value: transaction.transaction_id ,className:"text-sm"},
-                    { key: null, value: convertime(transaction.created_at),className:"text-xs"},
-                  ]}
-                  status={transaction.status}
-                  className={" snap-start "}
-                />
-              ))}
-            </div>
-          </div>
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
+      <main className="flex-grow pt-[100px] pb-20 w-full max-w-7xl mx-auto px-4 md:px-6">
+        {/* Profile and Quick Actions */}
+        <div className="mb-10">
+          <ProfileCard />
         </div>
-      </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {/* Bids Column */}
+          <section>
+            <div className="flex justify-between items-end mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">My Active Bids</h2>
+              <Link to="/dashboard/bids" className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                View All &rarr;
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {bids && bids.length > 0 ? (
+                bids.slice(0, 10).map((bid) => (
+                  <Link key={bid.id} to={`/dashboard/bids/${bid.id}`} className="block group">
+                    <Card
+                      label={bid.listing?.produce || bid.produce}
+                      className="group-hover:border-black transition-all bg-white"
+                      info_fields={[
+                        { key: "Quantity", value: `${bid.quantity} ${bid.listing?.metrics || bid.metrics}`, className: "text-sm" },
+                        { key: "Bid price", value: `₹${bid.bid_price}`, className: "text-sm" },
+                        { key: null, value: convertime(bid.created_at), className: "text-xs text-gray-400" },
+                      ]}
+                      status={bid.status}
+                    />
+                  </Link>
+                ))
+              ) : (
+                <div className="py-16 text-center text-gray-500 bg-white border border-dashed border-gray-300 rounded-2xl">
+                  No active bids. <Link to="/marketspace/listings" className="text-black font-bold hover:underline">Browse Market</Link>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Transactions Column */}
+          <section>
+            <div className="flex justify-between items-end mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Transaction History</h2>
+              <Link to="/dashboard/transactions" className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                View All &rarr;
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {transactions && transactions.length > 0 ? (
+                transactions.slice(0, 10).map((transaction) => (
+                  <Link key={transaction.id} to={`/dashboard/transactions/${transaction.id}`} className="block group">
+                    <Card
+                      label={`Amount: ₹${transaction.amount}`}
+                      className="group-hover:border-black transition-all bg-white"
+                      info_fields={[
+                        { key: "Transaction ID", value: transaction.transaction_id, className: "text-sm" },
+                        { key: null, value: convertime(transaction.created_at), className: "text-xs text-gray-400" },
+                      ]}
+                      status={transaction.status}
+                    />
+                  </Link>
+                ))
+              ) : (
+                <div className="py-16 text-center text-gray-500 bg-white border border-dashed border-gray-300 rounded-2xl">No transactions found.</div>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
       <Footer />
     </div>
   );
 }
 
-export default BuyerHomePage;
-
 const ProfileCard = () => {
   const navigate = useNavigate();
   const { userData } = useUserStore();
+  const profileImage = userData?.profileImg 
+    ? (userData.profileImg.startsWith('http') ? userData.profileImg : `http://localhost:8000${userData.profileImg}`)
+    : "https://avatar.iran.liara.run/public/boy";
+
   return (
-    <div className="w-[97%] h-fit px-3 py-2 mx-3 rounded-xl mt-3 shadow-[0px_0px_5px_rgba(0,0,0,0.25)]">
-      <div className="w-full h-full flex flex-col items-center ">
-        <div className="w-full h-full flex flex-row items-center ">
-          <img
-            src={"https://avatar.iran.liara.run/public/boy"}
-            alt=""
-            className="w-[15%] max-w-[70px] mr-3"
-          />
-          <div className="flex flex-col justify-evenly items-start">
-            <h1 className="text-xl font-medium">Welcome Back,</h1>
-            <p>
-              {userData.first_name} {userData.last_name}
-            </p>
-          </div>
-        </div>
-        <div className="w-full flex flex-row justify-between items-center ">
+    <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-8">
+      <div className="relative">
+        <img
+          src={profileImage}
+          alt="Profile"
+          className="w-24 h-24 rounded-full object-cover border-4 border-gray-50 shadow-md"
+        />
+        <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
+      </div>
+      <div className="flex-grow text-center sm:text-left">
+        <h1 className="text-sm text-gray-500 font-bold uppercase tracking-widest mb-1">Buyer Account</h1>
+        <p className="text-3xl font-black text-gray-900 leading-tight">
+          {userData?.first_name || "Buyer"} {userData?.last_name || ""}
+        </p>
+        <div className="flex flex-wrap justify-center sm:justify-start gap-4 mt-5">
           <button
-            type="button"
-            className="bg-black text-white p-2 rounded-md w-[49%] mt-3.5 cursor-pointer "
             onClick={() => navigate("/marketspace/listings")}
+            className="bg-black text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-800 transition-all shadow-lg"
           >
-            Browse Listings
+            Explore Marketplace
           </button>
           <button
-            type="button"
-            className="bg-transparent border-2 cursor-pointer border-black text-black p-2 rounded-md w-[49%] mt-3.5"
-            onClick={() => navigate("/dashboard/bids")}
+            onClick={() => navigate("/profile/form")}
+            className="bg-white border-2 border-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-bold hover:border-black hover:text-black transition-all"
           >
-            View Bids
+            Manage Profile
           </button>
         </div>
       </div>
     </div>
   );
 };
+
 export const convertime = (dateString) => {
+  if (!dateString) return "";
   const date = new Date(dateString);
-
-  // Format Date (e.g., "February 22, 2025")
-  const formattedDate = date.toLocaleDateString("en-UK", {
-    year: "numeric",
-    month: "numeric",
+  return date.toLocaleDateString("en-IN", {
     day: "numeric",
-  });
-
-  // Format Time (e.g., "3:30:45 PM")
-  const formattedTime = date.toLocaleTimeString("en-UK", {
+    month: "short",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true, // Use false for 24-hour format
+    hour12: true,
   });
+};
 
-  // Combined Date and Time
-  const formattedDateTime = `${formattedDate} ${formattedTime}`;
-
-  return formattedDateTime;
-}; // Output: "February 22, 2025 3:30:45 PM"
-
-
-
-{
-  /* <div className="w-[98%] flex flex-col rounded-xl shadow-[0px_0px_10px_rgba(0,0,0,0.19)]  mt-1.5 mb-1.5 relative">
-<div className="px-3 py-2 rounded-xl relative">
-  <div className="w-[85%]">
-    <h1 className="text-lg font-medium">{bid.listing}</h1>
-    <p>Bid Id: {bid.id}</p>
-    <p>Bid Price:{bid.bid_price}</p>
-    <p>Quantity:{bid.quantity}</p>
-  </div>
-  <div className="px-1.5 py-1 bg-yellow-200 rounded-md w-fit h-fit absolute right-2 top-2 flex justify-center items-center ">
-    <span className="text-yellow-900 text-xs">{bid.status}</span>
-  </div>
-</div>
-</div> */
-}
+export default BuyerHomePage;

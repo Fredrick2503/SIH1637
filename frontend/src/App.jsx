@@ -3,46 +3,15 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.jsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-//     </>
-//   )
-// }
-
-// export default App
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 // Importing Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
-// import Profile from "./pages/buyer/profile";
 import EditProfile from "./pages/farmer/EditProfile";
 import Listings from "./pages/buyer/Listings";
 import ListingDetail from "./pages/buyer/ListingDetail";
@@ -60,6 +29,7 @@ import CreateProfile from "./pages/CreateProfile";
 import BuyerHomePage from "./pages/buyer/Home";
 import MyBids from "./pages/buyer/MyBids";
 import MyTransactons from "./pages/buyer/MyTransactons";
+import MyListings from "./pages/farmer/MyListings";
 import Loader from "./pages/Loader";
 import Test from "./pages/Test";
 import BidDetail from "./pages/BidDetail";
@@ -79,6 +49,7 @@ export const BASE_URL = "http://localhost:5174";
 const AppRouter = () => {
   return (
     <Router>
+      <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         <Route element={<Loader />}>
           <Route path={``} element={<LandingPage />} />
@@ -86,13 +57,12 @@ const AppRouter = () => {
           <Route path={`about`} element={<AboutPage />} />
           <Route element={<AuthLayout Authreq={false} />}>
             <Route path={`login`} element={<Login />} />
-            {/* <Route path={`signup`} element={<Signup />} /> */}
             <Route path={`signup`} element={<CreateProfile />} />
           </Route>
           {/* Profile & User Settings */}
           <Route element={<AuthLayout />}>
             <Route path={`profile_setup`} element={<CreateProfile />} />
-              <Route path={`dashboard`} element={<Dashboard/>} />
+            <Route path={`dashboard`} element={<Dashboard />} />
             <Route path="buyer">
               <Route path={`home`} element={<BuyerHomePage />} />
               <Route path={`profile`} element={<Profile />} />
@@ -105,7 +75,6 @@ const AppRouter = () => {
             <Route path={`profile/form`} element={<EditProfile />} />
 
             {/* Home & Listings */}
-            {/* <Route path="/" element={<Home />} /> */}
             <Route
               path={`marketspace/listings/create`}
               element={<CreateListing />}
@@ -143,6 +112,7 @@ const AppRouter = () => {
               element={<DashboardFarmer />}
             />
             <Route path={`/dashboard/bids`} element={<MyBids />} />
+            <Route path={`/dashboard/listings`} element={<MyListings />} />
             <Route path={`dashboard/bids/:id`} element={<BidDetail />} />
           </Route>
           {/* Error Pages */}

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from django.http import JsonResponse
 # Create your views here.
-from database.models import Bid
+from orders.models import Bid
 from .serializers import BidSerializer
 from rest_framework.generics import ListAPIView,RetrieveAPIView,ListCreateAPIView
 from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
@@ -20,22 +20,25 @@ class BidView(ListModelMixin,CreateModelMixin,RetrieveModelMixin,UpdateModelMixi
     authentication_classes=[JWTAuthentication]
 
     def get_queryset(self):
-        return Bid.objects.filter(buyer=self.request.user)
+        user = self.request.user
+        if user.user_type == "producer":
+            return Bid.objects.filter(listing__seller=user).order_by('-created_at')
+        return Bid.objects.filter(buyer=user).order_by('-created_at')
     
     serializer_class=BidSerializer
     # def list(self, request, *args, **kwargs):
-    def get(self,request,pk=None):
-        if pk:
-            return self.retrieve(request)
-        return self.list(request)
-    def post(self,request,pk):
-        return self.create(request) 
-    def put(self,request,pk):
-        return self.update(request)
-    def patch(self,request,pk):
-        return self.partial_update(request)
-    def delete(self,request,pk):
-        return self.destroy(request)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        if kwargs.get("pk"):
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
     
 
 class BidRetriveView(RetrieveAPIView):

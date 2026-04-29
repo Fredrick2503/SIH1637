@@ -6,23 +6,32 @@ import msgsvg from "../assets/img/SVG@1x (2).png";
 import { useForm } from "react-hook-form";
 import { Input } from "../components/Input";
 import {useStore} from "zustand"
-import {auth} from "../utils/services"
+import { AuthApi } from "../api/auth.api"
 import { useUserStore } from "../store/AuthStore";
 import { Link, useNavigate } from "react-router";
+
+import toast from "react-hot-toast";
 
 export default function Login() {
   const {userData,setlogin}=useUserStore()
   const { register, handleSubmit } = useForm();
   const navigate=useNavigate();
-  const onSubmit =async (e) => {
-    e.preventDefault
-    console.log(e);
-    
-    const user= await auth.login(e)
-    console.log(user);
-    
-    setlogin(user.user,{"access":user.access,"refresh":user.refresh})
-    navigate("/buyer/home");
+  const onSubmit = async (data) => {
+    try {
+      const user = await AuthApi.login({ email: data.email, password: data.password });
+      setlogin(user.user, { "access": user.access, "refresh": user.refresh });
+      
+      toast.success("Login successful!");
+      // Redirect based on user role
+      if (user.user.role === "producer") {
+        navigate("/farmer/home");
+      } else {
+        navigate("/buyer/home");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      toast.error("Login failed. Please check your email and password.");
+    }
   };
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center md:flex-row">

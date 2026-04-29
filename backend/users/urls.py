@@ -1,6 +1,6 @@
 
 from django.urls import path,include
-from users.views import GoogleLogin,ProfileView ,CustomConfirmEmailView,PasswordChangeView,CustomLoginVeiw # and optionally your custom callback view
+from users.views import GoogleLogin,ProfileView ,CustomConfirmEmailView,PasswordChangeView,CustomLoginView # and optionally your custom callback view
 from django.contrib.auth import views as auth_views
 from dj_rest_auth.views import PasswordResetConfirmView,LoginView,LogoutView,UserDetailsView,PasswordResetView
 from rest_framework_simplejwt.views import TokenVerifyView,TokenRefreshView
@@ -10,7 +10,7 @@ from dj_rest_auth.jwt_auth import get_refresh_view
 urlpatterns= [
     path('registration/account-confirm-email/<str:key>/', CustomConfirmEmailView.as_view(), name="account_confirm_email"),
     path('registration/', include('dj_rest_auth.registration.urls')),
-    path('login/', CustomLoginVeiw.as_view(), name='login'),
+    path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('user/', UserDetailsView.as_view(), name='user_details'),
     path('profile/', ProfileView.as_view(), name='profile-detail'), 

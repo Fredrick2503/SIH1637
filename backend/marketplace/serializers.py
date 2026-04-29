@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from database.models import Produce,MarketPrice,Location,Listings,ListingImages
+from .models import Produce,MarketPrice,Location,Listings,ListingImages
 
 
 
@@ -67,8 +67,16 @@ class ListingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listings
         fields = "__all__"
+        extra_kwargs = {
+            "seller": {"read_only": True},
+        }
 
     def create(self, validated_data):
+        # ✅ Automatically assign the authenticated user as the seller
+        request = self.context.get('request')
+        if request and hasattr(request, "user"):
+            validated_data["seller"] = request.user
+        
         # ✅ Extract nested images before creating listing
         listing_images_data = validated_data.pop('listing_images', [])
         
@@ -104,9 +112,18 @@ class ListingsSerializer(serializers.ModelSerializer):
         return listing
         
     def to_representation(self, instance):
-        data=super().to_representation(instance)
-        # send_sse_event({"message": "A new update is available!"})
-        print(data)
-        data['produce']=str(Produce.objects.get(id=data.get('produce')))
+        data = super().to_representation(instance)
+        from users.serializers import ProfileSerializer
+        
+        produce_id = data.get('produce')
+        if produce_id:
+            try:
+                data['produce'] = str(Produce.objects.get(id=produce_id))
+            except (Produce.DoesNotExist, Exception):
+                pass
+                
+        if instance.seller:
+            data['seller_details'] = ProfileSerializer().to_representation(instance.seller)
+            
         return data
 

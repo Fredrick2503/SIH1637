@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { resource } from "../../utils/services";
+import { MarketplaceApi } from "../../api/marketplace.api";
+import { BidsApi } from "../../api/bids.api";
 import { useUserStore } from "../../store/AuthStore";
 import { useNavigate } from "react-router";
 import Footer from "../../components/Footer";
@@ -9,202 +10,192 @@ import { Link } from "react-router";
 import { ListingCard } from "../buyer/Listings";
 
 function FarmerHome() {
-  const [bids, setbids] = useState(null);
+  const [bids, setbids] = useState([]);
   const [transactions, settransactions] = useState([]);
-  const [listings, setlistings] = useState(null);
+  const [listings, setlistings] = useState([]);
+  const { userData } = useUserStore();
 
   useEffect(() => {
-    (async()=>{setbids(await resource.getbids());})();
-    settransactions(resource.gettransactions());
-    (async()=>{setlistings(await resource.getmylistings());})()
-    console.log(bids);
-    
+    const fetchData = async () => {
+      try {
+        const [bidsData, transData, listData] = await Promise.all([
+          BidsApi.getBids(),
+          MarketplaceApi.getTransactions(),
+          MarketplaceApi.getMyListings(),
+        ]);
+        setbids(bidsData);
+        settransactions(transData);
+        setlistings(listData);
+      } catch (error) {
+        console.error("Error fetching farmer data:", error);
+      }
+    };
+    fetchData();
   }, []);
-  return (
-    <div className="w-screen h-screen flex flex-col items-center relative overflow-y-auto ">
-      <Header />
-      <div className="w-full h-[100%] pt-[80px] pb-[55px] flex flex-col items-center">
-        <section className="w-full grid grid-cols-1 md:grid-cols-2 " >
-        <ProfileCard />
 
-        <section className="w-full grid grid-cols-3  justify-items-center gap-2 mt-3 px-3">
-          <div className="w-full px-5  flex flex-col items-center  justify-center rounded-lg shadow-[0px_0px_5px_rgba(0,0,0,0.19)] py-2">
-            <p className=" text-sm text-gray-600 text-center">
-              Active Listings
-            </p>
-            <p className="text-lg font-semibold">1</p>
+  const activeListingsCount = listings.length;
+  const pendingBidsCount = bids.filter(bid => bid.status === 'pending').length;
+  const totalSales = transactions.reduce((acc, trans) => acc + parseFloat(trans.amount || 0), 0);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
+      <main className="flex-grow pt-[100px] pb-20 w-full max-w-7xl mx-auto px-4 md:px-6">
+        {/* Top Section: Profile and Quick Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            <ProfileCard />
           </div>
-          <div className=" w-full px-5 flex flex-col items-center justify-center rounded-lg shadow-[0px_0px_5px_rgba(0,0,0,0.19)] py-2">
-            <p className=" text-sm text-gray-600 text-center">
-              Pending Listings
-            </p>
-            <p className="text-lg font-semibold">2</p>
-          </div>
-          <div className=" w-full px-5 flex flex-col items-center justify-center rounded-lg shadow-[0px_0px_5px_rgba(0,0,0,0.19)] py-2">
-            <p className=" text-sm text-gray-600 text-center">Total Sales</p>
-            <p className="text-lg font-semibold">1.25k</p>
-          </div>
-        </section></section>
-        <div className="w-full  grid grid-cols-1 md:grid-cols-2 justify-items-center pb-[50px]">
-          <div className="w-full md:col-span-2 px-3 py-2 flex flex-col justify-center items-center border-y-1  border-gray-300 mt-3 md:h-[100%] ">
-            <div className="w-full flex flex-row justify-between px-3 py-2 ">
-              <h1 className="font-medium">Listings</h1>
-              <Link to="/dashboard/bids" className="font-medium">
-                Veiw all
-              </Link>
-            </div>
-            <div className="w-screen py-2 grid grid-flow-col auto-cols-[175px] shrink-0 items-center overflow-auto gap-5  snap-x snap-mandatory  ">
-              {/* {bids?.map((bid) => (
-                    <Card
-                    className=" snap-start "
-                    label={bid.listing.produce}
-                    info_fields={[
-                      { key: "Quantity", value: `${bid.quantity} ${bid.listing.metrics}` ,className:"text-sm"},
-                      { key: "Bid price", value: bid.bid_price ,className:"text-sm"},
-                      { key: null, value: convertime(bid.created_at),className:"text-xs"},
-                    ]}
-                    status={bid.status}
-                  />
-                  ))} */}
-                  {listings!=null?listings.map((listing) => (
-                    <ListingCard
-                    className={"snap-center "}
-                    listing={listing}
-                  />
-                  )):<ListingCard className={"snap-center "} listing={null} />}
-            </div>
-          </div>
-          <div className="w-full  px-3 py-2 flex flex-col justify-center items-center border-y-1  border-gray-300 mt-3 md:h-[100%] ">
-            <div className="w-full flex flex-row justify-between px-3 py-2 ">
-              <h1 className="font-medium">Bids</h1>
-              <Link to="/dashboard/bids" className="font-medium">
-                Veiw all
-              </Link>
-            </div>
-            <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[300px] overflow-scroll snap-mandatory snap-y scroll-pt-2 overscroll-auto">
-              {bids && bids.map((bid) => (
-                <Card
-                  className=" snap-start "
-                  label={bid.produce}
-                  info_fields={[
-                    {
-                      key: "Quantity",
-                      value: `${bid.quantity} ${bid.metrics}`,
-                      className: "text-sm",
-                    },
-                    {
-                      key: "Bid price",
-                      value: bid.bid_price,
-                      className: "text-sm",
-                    },
-                    {
-                      key: null,
-                      value: convertime(bid.created_at),
-                      className: "text-xs",
-                    },
-                  ]}
-                  status={bid.status}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="w-full  px-3 py-2 flex flex-col  justify-center items-center border-y-1  border-gray-300 md:h-[100%] md:mt-3 ">
-            <div className="w-full flex flex-row gap-2 justify-between px-3 py-2 ">
-              <h1 className="font-medium">Orders</h1>
-              <Link to="/dashboard/transactions" className="font-medium">
-                Veiw all
-              </Link>
-            </div>
-            <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[300px] overflow-y-auto snap-y snap-mandatory scroll-pt-2 overscroll-auto">
-              {transactions?.map((transaction) => (
-                <Card
-                  label={`₹${transaction.amount}`}
-                  info_fields={[
-                    // { key: "Bid Quantity", value: bid.quantity },
-                    {
-                      key: "PID",
-                      value: transaction.transaction_id,
-                      className: "text-sm",
-                    },
-                    {
-                      key: null,
-                      value: convertime(transaction.created_at),
-                      className: "text-xs",
-                    },
-                  ]}
-                  status={transaction.status}
-                  className={" snap-start "}
-                />
-              ))}
-            </div>
+          <div className="grid grid-cols-3 gap-4">
+            <StatBox label="Active Listings" value={activeListingsCount} />
+            <StatBox label="Pending Bids" value={pendingBidsCount} />
+            <StatBox label="Total Sales" value={`₹${totalSales.toLocaleString()}`} />
           </div>
         </div>
-      </div>
+
+        {/* Listings Section */}
+        <section className="mb-12">
+          <SectionHeader title="My Listings" link="/dashboard/listings" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {listings.length > 0 ? (
+              listings.slice(0, 6).map((listing) => (
+                <Link key={listing.id} to={`/marketspace/listings/${listing.id}`} className="hover:scale-[1.02] transition-transform">
+                  <ListingCard listing={listing} />
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-gray-500 bg-white shadow-sm border border-gray-100 rounded-2xl">
+                No active listings. <Link to="/marketspace/listings/create" className="text-black font-bold hover:underline">Create one</Link>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Two Column Layout for Bids and Orders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Incoming Bids */}
+          <section>
+            <SectionHeader title="Incoming Bids" link="/dashboard/bids" />
+            <div className="space-y-4">
+              {bids && bids.length > 0 ? (
+                bids.slice(0, 5).map((bid) => (
+                  <Link key={bid.id} to={`/dashboard/bids/${bid.id}`} className="block group">
+                    <Card
+                      label={bid.produce}
+                      className="group-hover:border-black transition-colors"
+                      info_fields={[
+                        { key: "Quantity", value: `${bid.quantity} ${bid.metrics}`, className: "text-sm" },
+                        { key: "Bid price", value: `₹${bid.bid_price}`, className: "text-sm" },
+                        { key: null, value: convertime(bid.created_at), className: "text-xs text-gray-400" },
+                      ]}
+                      status={bid.status}
+                    />
+                  </Link>
+                ))
+              ) : (
+                <div className="py-12 text-center text-gray-500 bg-white shadow-sm border border-gray-100 rounded-2xl">No bids received yet.</div>
+              )}
+            </div>
+          </section>
+
+          {/* Recent Orders */}
+          <section>
+            <SectionHeader title="Recent Orders" link="/dashboard/transactions" />
+            <div className="space-y-4">
+              {transactions && transactions.length > 0 ? (
+                transactions.slice(0, 5).map((transaction) => (
+                  <Link key={transaction.id} to={`/dashboard/transactions/${transaction.id}`} className="block group">
+                    <Card
+                      label={`Total: ₹${transaction.amount}`}
+                      className="group-hover:border-black transition-colors"
+                      info_fields={[
+                        { key: "Transaction ID", value: transaction.transaction_id, className: "text-sm" },
+                        { key: null, value: convertime(transaction.created_at), className: "text-xs text-gray-400" },
+                      ]}
+                      status={transaction.status}
+                    />
+                  </Link>
+                ))
+              ) : (
+                <div className="py-12 text-center text-gray-500 bg-white shadow-sm border border-gray-100 rounded-2xl">No recent orders.</div>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
       <Footer />
     </div>
   );
 }
 
-export default FarmerHome;
+const StatBox = ({ label, value }) => (
+  <div className="bg-white p-4 flex flex-col items-center justify-center rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
+    <p className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider font-semibold text-center mb-1">{label}</p>
+    <p className="text-sm sm:text-lg font-bold text-gray-900">{value}</p>
+  </div>
+);
+
+const SectionHeader = ({ title, link }) => (
+  <div className="flex justify-between items-end mb-4 px-1">
+    <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+    <Link to={link} className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+      View All &rarr;
+    </Link>
+  </div>
+);
 
 const ProfileCard = () => {
   const navigate = useNavigate();
   const { userData } = useUserStore();
+  const profileImage = userData?.profileImg 
+    ? (userData.profileImg.startsWith('http') ? userData.profileImg : `http://localhost:8000${userData.profileImg}`)
+    : "https://avatar.iran.liara.run/public/boy";
+
   return (
-    <div className="w-[97%] h-fit px-3 py-2 mx-3 rounded-xl mt-3 shadow-[0px_0px_5px_rgba(0,0,0,0.25)]">
-      <div className="w-full h-full flex flex-col items-center ">
-        <div className="w-full h-full flex flex-row items-center ">
-          <img
-            src={"https://avatar.iran.liara.run/public/boy"}
-            alt=""
-            className="w-[15%] max-w-[70px] mr-3"
-          />
-          <div className="flex flex-col justify-evenly items-start">
-            <h1 className="text-sm font-normal">Welcome Back,</h1>
-            <p className="text-2xl font-medium">
-              {String(userData.first_name).toUpperCase()} {String(userData.last_name).toUpperCase()}
-            </p>
-          </div>
-        </div>
-        <div className="w-full flex flex-row justify-between items-center ">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6">
+      <div className="relative">
+        <img
+          src={profileImage}
+          alt="Profile"
+          className="w-20 h-20 rounded-full object-cover border-4 border-gray-50 shadow-sm"
+        />
+        <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
+      </div>
+      <div className="flex-grow text-center sm:text-left">
+        <h1 className="text-sm text-gray-500 font-medium">Welcome back,</h1>
+        <p className="text-2xl font-bold text-gray-900 leading-tight">
+          {userData?.first_name || "Farmer"} {userData?.last_name || ""}
+        </p>
+        <div className="flex flex-wrap justify-center sm:justify-start gap-3 mt-4">
           <button
-            type="button"
-            className="bg-black text-white p-2 rounded-md w-[49%] mt-3.5 cursor-pointer "
-            onClick={() => navigate("/marketspace/listings")}
+            onClick={() => navigate("/marketspace/listings/create")}
+            className="bg-black text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-800 transition-all"
           >
-            Create New Listing
+            + Create Listing
           </button>
           <button
-            type="button"
-            className="bg-transparent border-2 cursor-pointer border-black text-black p-2 rounded-md w-[49%] mt-3.5"
-            onClick={() => navigate("/dashboard/bids")}
+            onClick={() => navigate("/profile/form")}
+            className="bg-transparent border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-50 transition-all"
           >
-            My Listings
+            Edit Profile
           </button>
         </div>
       </div>
     </div>
   );
 };
+
 export const convertime = (dateString) => {
+  if (!dateString) return "";
   const date = new Date(dateString);
-
-  // Format Date (e.g., "February 22, 2025")
-  const formattedDate = date.toLocaleDateString("en-UK", {
-    year: "numeric",
-    month: "numeric",
+  return date.toLocaleDateString("en-IN", {
     day: "numeric",
-  });
-
-  // Format Time (e.g., "3:30:45 PM")
-  const formattedTime = date.toLocaleTimeString("en-UK", {
+    month: "short",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true, // Use false for 24-hour format
+    hour12: true,
   });
+};
 
-  // Combined Date and Time
-  const formattedDateTime = `${formattedDate} ${formattedTime}`;
-
-  return formattedDateTime;
-}; // Output: "February 22, 2025 3:30:45 PM"
+export default FarmerHome;

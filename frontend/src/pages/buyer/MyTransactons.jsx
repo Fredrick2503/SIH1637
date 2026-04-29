@@ -5,7 +5,7 @@ import homesvg from "../../assets/svg/home.svg";
 import searchsvg from "../../assets/svg/search.svg";
 import backsvg from "../../assets/svg/back.svg";
 import crrot from "../../assets/img/IMG@4x.png";
-import { resource } from "../../utils/services";
+import { MarketplaceApi } from "../../api/marketplace.api";
 import { Input } from "../../components/Input";
 import  Footer  from "../../components/Footer";
 import Header from "../../components/Header";
@@ -17,7 +17,7 @@ import Loading from "../Loading";
 export default function MyTransactons(){
     const [transactions,settransactions]=useState([]);
     useEffect(()=>{
-        settransactions(resource.gettransactions())
+        (async()=>{settransactions(await MarketplaceApi.getTransactions())})()
     },[])
   return (
     <div className="w-screen h-screen flex flex-col items-center relative overflow-y-auto ">
