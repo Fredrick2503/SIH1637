@@ -2,15 +2,14 @@ import React, { useEffect } from 'react'
 import { useUserStore } from '../store/AuthStore'
 import DashboardFarmer from './DashboardFarmer';
 import FarmerHome from './farmer/Home';
-import Farmerprofile from './farmer/profile';
-import Buyerprofile from './buyer/profile';
-function Profile() {
+import BuyerHomePage from './buyer/Home';
+function Dashboard() {
 const {userData}=useUserStore();
-console.log(userData);
+console.log(userData.role);
 
   return (<>
-    {userData.role=="farmer"?<Farmerprofile/>:<Buyerprofile/>}</>
+    {userData.role==="producer"?<FarmerHome/>:<BuyerHomePage/> }</>
   )
 }
 
-export default Profile
+export default Dashboard

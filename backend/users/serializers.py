@@ -1,5 +1,6 @@
 from datetime import datetime
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from dj_rest_auth.serializers import LoginSerializer,UserDetailsSerializer,JWTSerializer
 # from dj_rest_auth.registration.views import RegisterView
 from requests import HTTPError
 from rest_framework import serializers
@@ -27,28 +28,186 @@ from .models import User, IndividualProfile, FarmProfile, OrganizationProfile
 
 User = get_user_model()
 
+# class CustomRegisterSerializer(RegisterSerializer):
+#     username=None,
+#     """ Custom Registration Serializer to handle different user types """
+#     phone_number = ""
+#     user_type = serializers.ChoiceField(choices=User.USER_TYPE_CHOICES)
+#     user_category = serializers.ChoiceField(choices=User.USER_CATEGORY)
+#     first_name = serializers.CharField(required=False, allow_blank=True)
+#     last_name = serializers.CharField(required=False, allow_blank=True)
+#     farmName = serializers.CharField(required=False, allow_blank=True)
+#     location = serializers.CharField(required=False, allow_blank=True)
+#     farmArea = serializers.FloatField(required=False)
+#     organizationName = serializers.CharField(required=False, allow_blank=True)
+#     organizationType = serializers.CharField(required=False, allow_blank=True)
+#     about = serializers.CharField(required=False, allow_blank=True)
+#     rating = serializers.FloatField(required=False)
+#     tagline = serializers.CharField(required=False, allow_blank=True)
+#     profileImg = serializers.ImageField(required=False, allow_null=True)
+#     heroImg = serializers.ImageField(required=False, allow_null=True)
+
+#     def get_cleaned_data(self):
+#         """ Returns cleaned data for user creation """
+#         data = super().get_cleaned_data()
+#         data.update({
+#             "phone_number": self.validated_data.get("phone_number", ""),
+#             # "user_type": self.validated_data.get("user_type", "")\,
+#             # "user_type": self.validated_data.get("user_type", ""),
+#         })
+#         return data
+
+#     def save(self, request):
+#         """ Saves user and their profile based on user type """
+#         user = super().save(request)
+#         user.user_type = self.validated_data.get("user_type")
+#         user.phone_number = self.validated_data.get("phone_number")
+#         user.save()
+
+#         return user
+
+
 class CustomRegisterSerializer(RegisterSerializer):
-    """ Custom Registration Serializer to handle different user types """
-    phone_number = serializers.CharField(required=False, allow_blank=True)
+    username = None  # Remove username field
+    phone_number = serializers.CharField(required=False, max_length=15)
+    user_type = serializers.ChoiceField(choices=User.USER_TYPE_CHOICES)
+    user_category = serializers.ChoiceField(choices=User.USER_CATEGORY)
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
+    farmName = serializers.CharField(required=False, allow_blank=True)
+    location = serializers.CharField(required=False, allow_blank=True)
+    farmArea = serializers.FloatField(required=False, allow_null=True)
+    organizationName = serializers.CharField(required=False, allow_blank=True)
+    organizationType = serializers.CharField(required=False, allow_blank=True)
+    about = serializers.CharField(required=False, allow_blank=True)
+    tagline = serializers.CharField(required=False, allow_blank=True)
+    profileImg = serializers.ImageField(required=False, allow_null=True)
+    heroImg = serializers.ImageField(required=False, allow_null=True)
 
     def get_cleaned_data(self):
-        """ Returns cleaned data for user creation """
         data = super().get_cleaned_data()
         data.update({
             "phone_number": self.validated_data.get("phone_number", ""),
-            # "user_type": self.validated_data.get("user_type", "")\,
-            # "user_type": self.validated_data.get("user_type", ""),
+            "user_type": self.validated_data.get("user_type", ""),
+            "user_category": self.validated_data.get("user_category", "")
         })
         return data
 
     def save(self, request):
-        """ Saves user and their profile based on user type """
         user = super().save(request)
-        user.user_type = None
         user.phone_number = self.validated_data.get("phone_number")
+        user.user_type = self.validated_data.get("user_type")
+        user.user_category = self.validated_data.get("user_category")
         user.save()
 
+        # Assign profile based on user type
+        profile = None
+        if user.user_type == User.PRODUCER:
+            if user.user_category == User.INDIVIDUAL:
+                profile = IndividualProducerProfile.objects.create(user=user)
+            elif user.user_category == User.ORGANISATION:
+                profile = FarmProfile.objects.create(user=user)
+        elif user.user_type == User.BUYER:
+            if user.user_category == User.INDIVIDUAL:
+                profile = IndividualBuyerProfile.objects.create(user=user)
+            elif user.user_category == User.ORGANISATION:
+                profile = OrganizationProfile.objects.create(user=user)
+        
+        if profile:
+            profile.first_name = self.validated_data.get("first_name", "")
+            profile.last_name = self.validated_data.get("last_name", "")
+            profile.about = self.validated_data.get("about", "")
+            profile.tagline = self.validated_data.get("tagline", "")
+            profile.location = self.validated_data.get("location", "")
+            profile.farmArea = self.validated_data.get("farmArea", None)
+            profile.organizationName = self.validated_data.get("organizationName", "")
+            profile.organizationType = self.validated_data.get("organizationType", "")
+            profile.profileImg = self.validated_data.get("profileImg", None)
+            profile.heroImg = self.validated_data.get("heroImg", None)
+            profile.save()
+
         return user
+    
+class CustomUserDetailsSerializer(UserDetailsSerializer):
+    """ Custom Registration Serializer to handle different user types """
+    # phone_number = serializers.CharField(required=False, allow_blank=True)
+
+    # def get_cleaned_data(self):
+    #     """ Returns cleaned data for user creation """
+    #     data = super().get_cleaned_data()
+    #     data.update({
+    #         "phone_number": self.validated_data.get("phone_number", ""),
+    #         # "user_type": self.validated_data.get("user_type", "")\,
+    #         # "user_type": self.validated_data.get("user_type", ""),
+    #     })
+    #     return data
+
+    # def save(self, request):
+    #     """ Saves user and their profile based on user type """
+    #     user = super().save(request)
+    #     user.user_type = None
+    #     user.phone_number = self.validated_data.get("phone_number")
+    #     user.save()
+
+    #     return user
+    def to_representation(self, instance):
+        data= super().to_representation(instance)
+        print(instance)
+        return ProfileSerializer().to_representation(instance)
+        
+    
+class CustomJWTSerializer(JWTSerializer):
+    """ Custom Registration Serializer to handle different user types """
+    # phone_number = serializers.CharField(required=False, allow_blank=True)
+
+    # def get_cleaned_data(self):
+    #     """ Returns cleaned data for user creation """
+    #     data = super().get_cleaned_data()
+    #     data.update({
+    #         "phone_number": self.validated_data.get("phone_number", ""),
+    #         # "user_type": self.validated_data.get("user_type", "")\,
+    #         # "user_type": self.validated_data.get("user_type", ""),
+    #     })
+    #     return data
+
+    # def save(self, request):
+    #     """ Saves user and their profile based on user type """
+    #     user = super().save(request)
+    #     user.user_type = None
+    #     user.phone_number = self.validated_data.get("phone_number")
+    #     user.save()
+
+    #     return user
+    def to_representation(self, instance):
+        data=super().to_representation(instance)
+        print(data)
+        return data
+
+class CustomLoginSerializer(LoginSerializer):
+    """ Custom Registration Serializer to handle different user types """
+    # phone_number = serializers.CharField(required=False, allow_blank=True)
+
+    # def get_cleaned_data(self):
+    #     """ Returns cleaned data for user creation """
+    #     data = super().get_cleaned_data()
+    #     data.update({
+    #         "phone_number": self.validated_data.get("phone_number", ""),
+    #         # "user_type": self.validated_data.get("user_type", "")\,
+    #         # "user_type": self.validated_data.get("user_type", ""),
+    #     })
+    #     return data
+
+    # def save(self, request):
+    #     """ Saves user and their profile based on user type """
+    #     user = super().save(request)
+    #     user.user_type = None
+    #     user.phone_number = self.validated_data.get("phone_number")
+    #     user.save()
+
+    #     return user
+    def to_representation(self, instance):
+        print(super().to_representation(instance))
+        return super().to_representation(instance)
     
 
 
@@ -227,6 +386,28 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Customize response data based on `user_type`"""
+        # data: {
+        #   accessToken:
+        #     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjg4MTA3NDY5LCJleHAiOjE2ODgxOTM4Njl9.40qfVrWi8x8fGBRB9JBVCVsdMYvlwzjIRpffz5z7DK4",
+        #   refreshToken:
+        #     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho",
+        #   user: {
+        #     _id: "649e795264e7dba29b726936",
+        #     createdAt: "2023-06-30T06:42:26.163Z",
+        #     email: email,
+        #     first_name: "dummy",
+        #     last_name: "dummy",
+        #     role: "farmer",
+        #     type: "Individual",
+        #     isEmailVerified: true,
+        #     loginType: "EMAIL_PASSWORD",
+        #     updatedAt: "2023-06-30T06:44:29.831Z",
+        #   },
+        # },
+    #     message: "User logged in successfully",
+    #     statusCode: 200,
+    #     success: true,
+    #   };
         data = super().to_representation(instance)
         data["email"] = instance.email
         data["phone_no"] = instance.phone_number
@@ -249,6 +430,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         #     data={}
         #     data['msg']="Uninitalized User"
         #     return data
+        data["role"]=instance.user_type
+        data.pop("user_type")
         if profile:
             
             # Assign values dynamically to avoid redundant code

@@ -15,10 +15,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const onSubmit = async (e) => {
     e.preventDefault;
-    const user = await auth.login(e).then((res) => {
-      console.log(res);
-      return res.data;
-    });
+    const user = await auth.signup(e)
     setlogin(user.user);
     console.log(userData);
     // console.log(data);
@@ -47,7 +44,7 @@ export default function Signup() {
             <Input
               label={"Password"}
               avtr={passsvg}
-              {...register("password")}
+              {...register("password1")}
             />
             <Input
               label={"Confirm Password"}

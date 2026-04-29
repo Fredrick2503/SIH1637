@@ -1,13 +1,16 @@
 import React from "react";
 import { Link, NavLink } from "react-router";
+import { useUserStore } from "../store/AuthStore";
 export default function Footer() {
+  const {userData}=useUserStore();
   return (
     <footer className="w-screen h-[50px] fixed bottom-0 py-2  shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-white ">
       <ul className="w-full flex flex-row justify-evenly items-center">
         <li className=" flex flex-col justify-center items-center ">
           <NavLink
-            to="/"
+            to="/dashboard"
             className=" flex flex-col justify-center items-center text-sm font-extralight "
+            end
           >
             {({ isActive, isPending, isTransitioning }) => (
               <>
@@ -64,7 +67,7 @@ export default function Footer() {
         <li className=" flex flex-col justify-center items-center ">
           <NavLink
             className=" flex flex-col justify-center items-center text-sm font-extralight"
-            to={"/profile"}
+            to={`/${userData._id}`}
           >
             {({ isActive, isPending, isTransitioning }) => (
               <>

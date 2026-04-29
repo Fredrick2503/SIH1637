@@ -1,126 +1,237 @@
+import axios from "axios";
+import { useUserStore } from "../store/AuthStore";
+
 class Resource {
-  getbids = () => {
-    return [
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8ab",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "accepted",
-        created_at: "2025-02-21T12:37:18.095840Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
+  constructor() {
+    this.ResourceInstance = axios.create({
+      baseURL: "api/marketspace",
+      headers: {
+        "Content-Type": "application/json",
       },
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8ab",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "accepted",
-        created_at: "2025-02-21T12:37:18.095840Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
+      withCredentials: true,
+    });
+    this.ResourceInstance.interceptors.request.use(
+      (config) => {
+        const tokens = useUserStore.getState()?.tokens;
+        config.headers.Authorization = `Bearer ${tokens["access"]}`;
+        console.log("Request Config:", config);
+        
+        return config;
       },
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8ab",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "accepted",
-        created_at: "2025-02-21T12:37:18.095840Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+    this.ResourceInstance.interceptors.response.use(
+      (res) => res,
+      async (error) => {
+        console.log("Response Error:", error);
+        
+        const Orginalerror = error.config;
+        if (
+          error.response &&
+          error.response.status === 401 &&
+          !Orginalerror._retry
+        ) {
+          Orginalerror.retry = true;
+        }
+        try {
+          const res = await axios.post("api/auth/token/refresh/", {
+            refresh: useUserStore.getState()?.tokens.refresh,
+          });
+          console.log(res);
+          const newtokens = res.data;
+          useUserStore
+            .getState()
+            .setTokens(newtokens.access, newtokens.refresh);
+          Orginalerror.headers.Authorization = `Brearer ${newtokens.access}`;
+          return this.ResourceInstance(Orginalerror);
+        } catch (err) {
+          // useUserStore.getState().setlogout();
+          return Promise.reject(err);
+        }
+      }
+    );
+    this.BidsInstance = axios.create({
+      baseURL: "api/bids",
+      headers: {
+        "Content-Type": "application/json",
       },
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8ab",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "accepted",
-        created_at: "2025-02-21T12:37:18.095840Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
+      withCredentials: true,
+    });
+    this.BidsInstance.interceptors.request.use(
+      (config) => {
+        const tokens = useUserStore.getState()?.tokens;
+        config.headers.Authorization = `Bearer ${tokens["access"]}`;
+        return config;
       },
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8ab",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "accepted",
-        created_at: "2025-02-21T12:37:18.095840Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
-      },
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8a1",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "pending",
-        created_at: "2025-02-21T12:52:26.930960Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
-      },
-      {
-        id: "2a860a65-d15f-48ac-b206-402af58db8a2",
-        bid_price: "2000.00",
-        quantity: "2.00",
-        total_amt: "400.00",
-        status: "rejected",
-        created_at: "2025-02-21T12:52:31.480898Z",
-        buyer: "admin@nhce.edu",
-        listing: {
-          id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-          AskPrice: "200.00",
-          metrics: "Q",
-          Qty_available: "10.00",
-          seller: "admin@nhce.edu",
-          produce: "Rice-sona masuri",
-        },
-      },
-    ];
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+    this.BidsInstance.interceptors.response.use(
+      (res) => res,
+      async (error) => {
+        const Orginalerror = error.config;
+        if (
+          error.response &&
+          error.response.status === 401 &&
+          !Orginalerror._retry
+        ) {
+          Orginalerror.retry = true;
+        }
+        try {
+          const res = await axios.post("api/auth/token/refresh/", {
+            refresh: useUserStore.getState()?.tokens.refresh,
+          });
+          console.log(res);
+          const newtokens = res.data;
+          useUserStore
+            .getState()
+            .setTokens(newtokens.access, newtokens.refresh);
+          Orginalerror.headers.Authorization = `Brearer ${newtokens.access}`;
+          return this.ResourceInstance(Orginalerror);
+        } catch (err) {
+          // useUserStore.getState().setlogout();
+          return Promise.reject(err);
+        }
+      }
+    );
+  }
+  getlistings = async () => {
+    const res = await this.ResourceInstance.get("listings");
+    // console.log(res);
+    console.log(res.data);
+
+    // return res.data;
+    return [];
+  };
+  getmylistings = async () => {
+    const res = await this.ResourceInstance.get("listings/mylistings/");
+    console.log(res.data);
+
+    return res.data;
+    // return [
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8ab",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "accepted",
+    //     created_at: "2025-02-21T12:37:18.095840Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8ab",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "accepted",
+    //     created_at: "2025-02-21T12:37:18.095840Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8ab",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "accepted",
+    //     created_at: "2025-02-21T12:37:18.095840Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8ab",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "accepted",
+    //     created_at: "2025-02-21T12:37:18.095840Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8ab",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "accepted",
+    //     created_at: "2025-02-21T12:37:18.095840Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8a1",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "pending",
+    //     created_at: "2025-02-21T12:52:26.930960Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    //   {
+    //     id: "2a860a65-d15f-48ac-b206-402af58db8a2",
+    //     bid_price: "2000.00",
+    //     quantity: "2.00",
+    //     total_amt: "400.00",
+    //     status: "rejected",
+    //     created_at: "2025-02-21T12:52:31.480898Z",
+    //     buyer: "admin@nhce.edu",
+    //     listing: {
+    //       id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //       AskPrice: "200.00",
+    //       metrics: "Q",
+    //       Qty_available: "10.00",
+    //       seller: "admin@nhce.edu",
+    //       produce: "Rice-sona masuri",
+    //     },
+    //   },
+    // ];
   };
 
   gettransactions = () => {
@@ -204,313 +315,307 @@ class Resource {
       },
     ];
   };
-  getlistings = () => {
-    return [
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f50",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f53",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "deb6813b-d220-49ff-ab15-bde652c8306c",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Soyabean-Soyabeen",
-      },
-      {
-        id: "82398f19-d14a-4111-a438-979d2d1a38b4",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram Dal (Moong Dal)-Green gram",
-      },
-      {
-        id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram (Moong)(Whole)-Other",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f50",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f53",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "deb6813b-d220-49ff-ab15-bde652c8306c",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Soyabean-Soyabeen",
-      },
-      {
-        id: "82398f19-d14a-4111-a438-979d2d1a38b4",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram Dal (Moong Dal)-Green gram",
-      },
-      {
-        id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram (Moong)(Whole)-Other",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f50",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f53",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "deb6813b-d220-49ff-ab15-bde652c8306c",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Soyabean-Soyabeen",
-      },
-      {
-        id: "82398f19-d14a-4111-a438-979d2d1a38b4",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram Dal (Moong Dal)-Green gram",
-      },
-      {
-        id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram (Moong)(Whole)-Other",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f50",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f53",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "deb6813b-d220-49ff-ab15-bde652c8306c",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Soyabean-Soyabeen",
-      },
-      {
-        id: "82398f19-d14a-4111-a438-979d2d1a38b4",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram Dal (Moong Dal)-Green gram",
-      },
-      {
-        id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram (Moong)(Whole)-Other",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f50",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "330e0308-f8ff-4255-936c-f9fd92844f53",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Rice-sona masuri",
-      },
-      {
-        id: "deb6813b-d220-49ff-ab15-bde652c8306c",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Soyabean-Soyabeen",
-      },
-      {
-        id: "82398f19-d14a-4111-a438-979d2d1a38b4",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram Dal (Moong Dal)-Green gram",
-      },
-      {
-        id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
-        AskPrice: "200.00",
-        metrics: "Q",
-        Qty_available: "10.00",
-        seller: "admin@nhce.edu",
-        produce: "Green Gram (Moong)(Whole)-Other",
-      },
-    ];
+  getbids = async () => {
+    const res = await this.BidsInstance.get("/");
+    console.log(res.data);
+
+    return res.data;
+    // return [
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f50",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f53",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "deb6813b-d220-49ff-ab15-bde652c8306c",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Soyabean-Soyabeen",
+    //   },
+    //   {
+    //     id: "82398f19-d14a-4111-a438-979d2d1a38b4",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram Dal (Moong Dal)-Green gram",
+    //   },
+    //   {
+    //     id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram (Moong)(Whole)-Other",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f50",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f53",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "deb6813b-d220-49ff-ab15-bde652c8306c",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Soyabean-Soyabeen",
+    //   },
+    //   {
+    //     id: "82398f19-d14a-4111-a438-979d2d1a38b4",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram Dal (Moong Dal)-Green gram",
+    //   },
+    //   {
+    //     id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram (Moong)(Whole)-Other",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f50",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f53",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "deb6813b-d220-49ff-ab15-bde652c8306c",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Soyabean-Soyabeen",
+    //   },
+    //   {
+    //     id: "82398f19-d14a-4111-a438-979d2d1a38b4",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram Dal (Moong Dal)-Green gram",
+    //   },
+    //   {
+    //     id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram (Moong)(Whole)-Other",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f50",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f53",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "deb6813b-d220-49ff-ab15-bde652c8306c",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Soyabean-Soyabeen",
+    //   },
+    //   {
+    //     id: "82398f19-d14a-4111-a438-979d2d1a38b4",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram Dal (Moong Dal)-Green gram",
+    //   },
+    //   {
+    //     id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram (Moong)(Whole)-Other",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f59",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f50",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "330e0308-f8ff-4255-936c-f9fd92844f53",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Rice-sona masuri",
+    //   },
+    //   {
+    //     id: "deb6813b-d220-49ff-ab15-bde652c8306c",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Soyabean-Soyabeen",
+    //   },
+    //   {
+    //     id: "82398f19-d14a-4111-a438-979d2d1a38b4",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram Dal (Moong Dal)-Green gram",
+    //   },
+    //   {
+    //     id: "58fc3a02-14f3-46f4-b166-e79ea1bd9cc0",
+    //     AskPrice: "200.00",
+    //     metrics: "Q",
+    //     Qty_available: "10.00",
+    //     seller: "admin@nhce.edu",
+    //     produce: "Green Gram (Moong)(Whole)-Other",
+    //   },
+    // ];
   };
 }
 
 class Authentication {
-  getuser = () => {
-    return {
-      email: "dummy@dummy.com",
-      first_name: "dummy",
-      last_name: "dummy",
-      phone: "0123456789",
-      role: "buyer",
-      type: "individual",
-    };
+  constructor() {
+    this.Authenticate = axios.create({
+      baseURL: "api/auth",
+      headers: {
+        "Content-Type": "application/json",
+        // "Access-Control-Allow-Origin": "http://localhost:5173",
+        // "Access-Control-Allow-Credentials": "true",
+        // 'cross-origin-opener-policy': "same-origin",
+        // "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+      },
+      withCredentials: true,
+    });
+  }
+  setprofile = async (data = {}) => {
+    const res = await this.Authenticate.post("/profile/", data);
+    return res.data;
   };
   login = async ({ email, password }) => {
     console.log(email, password);
     const data = async () => {
-      return {
-        data: {
-          accessToken:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJlbWFpbCI6IndhamUuc2h1YmhhbTExMUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6IndhamVzaHViaGFtIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjg4MTA3NDY5LCJleHAiOjE2ODgxOTM4Njl9.40qfVrWi8x8fGBRB9JBVCVsdMYvlwzjIRpffz5z7DK4",
-          refreshToken:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDllNzk1MjY0ZTdkYmEyOWI3MjY5MzYiLCJpYXQiOjE2ODgxMDc0NjksImV4cCI6MTY4ODk3MTQ2OX0.7or55Coj0K_UY4YpzYzkNR9hcOIhusxk9FRz7eMV8Ho",
-          user: {
-            _id: "649e795264e7dba29b726936",
-            createdAt: "2023-06-30T06:42:26.163Z",
-            email: email,
-            first_name: "dummy",
-            last_name: "dummy",
-            role: "Buyer",
-            type: "Individual",
-            isEmailVerified: true,
-            loginType: "EMAIL_PASSWORD",
-            updatedAt: "2023-06-30T06:44:29.831Z",
-          },
-        },
-        message: "User logged in successfully",
-        statusCode: 200,
-        success: true,
-      };
+      const res = await this.Authenticate.post("/login/", {
+        email: email,
+        password: password,
+      });
+      return res.data;
     };
     return await data().then((res) => {
       return res;
     });
   };
-  signup = ({ email, password1, password2 }) => {
-    console.log(email, password1, password2);
-    return {
-      data: {
-        createdAt: "2023-06-30T06:42:26.163Z",
-        email: "user.email@domain.com",
-        isEmailVerified: false,
-        loginType: "EMAIL_PASSWORD",
-        role: "Buyer",
-        type: "Individual",
-        first_name: "dummy",
-        last_name: "dummy",
-        updatedAt: "2023-06-30T06:42:26.247Z",
-      },
-      message:
-        "Users registered successfully and verification email has been sent on your email.",
-      statusCode: 200,
-      success: true,
-    };
+  signup = async (data) => {
+    const res = await this.Authenticate.post("/registration/", data);
+    return res.data;
+    // {
+    //   data: {
+    //     createdAt: "2023-06-30T06:42:26.163Z",
+    //     email: "user.email@domain.com",
+    //     isEmailVerified: false,
+    //     loginType: "EMAIL_PASSWORD",
+    //     role: "farmer",
+    //     type: "Individual",
+    //     first_name: "dummy",
+    //     last_name: "dummy",
+    //     updatedAt: "2023-06-30T06:42:26.247Z",
+    //   },
+    //   message:
+    //     "Users registered successfully and verification email has been sent on your email.",
+    //   statusCode: 200,
+    //   success: true,
+    // };
   };
 }
 

@@ -83,21 +83,23 @@ AUTH_USER_MODEL = 'users.User'
 # Tell allauth that the user model doesn't have a username field.
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"  # Use "https" in production
 ACCOUNT_EMAIL_VERIFICATION = "optional"  # Or "none"
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False  # ✅ Disables username in Allauth
+ACCOUNT_AUTHENTICATION_METHOD = "email"  # ✅ Login via email only
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # ✅ Ensures no username dependency
+ACCOUNT_SIGNUP_FIELDS = ['email', 'password1', 'password2']
 
-# Do not require a username at signup.
-ACCOUNT_USERNAME_REQUIRED = False
+
+
+ACCOUNT_SIGNUP_FIELDS =['email*', 'password1*', 'password2*']
 
 # ACCOUNT_AUTHENTICATION_METHOD = "email"
 # ACCOUNT_EMAIL_REQUIRED = True
 # ACCOUNT_UNIQUE_EMAIL = True
 
 # Use email as the unique identifier for authentication.
-ACCOUNT_LOGIN_METHODS = ('email',)
-SOCIALACCOUNT_ADAPTER = 'users.adapters.MySocialAccountAdapter'
+ACCOUNT_LOGIN_METHODS = ["email"]  # New replacement for authentication method
 
-# Optionally, ensure email is required.
-ACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_ADAPTER = 'users.adapters.MySocialAccountAdapter'
 
 # Optionally, specify a redirect URL after login.
 LOGIN_REDIRECT_URL = '/'
@@ -118,7 +120,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,  
-    "USER_ID_FIELD": "email"# Ensures tokens are blacklisted on logout
+    "USER_ID_FIELD": "email",
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -126,7 +128,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+    'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer',
+    'USER_DETAILS_SERIALIZER': 'users.serializers.CustomUserDetailsSerializer',
+    'JWT_SERIALIZER': 'users.serializers.CustomJWTSerializer',
     'USE_JWT': True,
+    'USERNAME_REQUIRED': False,# Ensures tokens are blacklisted on logout
 }
 
 

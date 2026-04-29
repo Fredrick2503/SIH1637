@@ -67,11 +67,11 @@ class ListingListView(ListAPIView):
 
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin 
 class MyListingView(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin,ListModelMixin, DestroyModelMixin, GenericAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     authentication_classes = [JWTAuthentication]
     def get_queryset(self):
-        return Listings.objects.all()
-        # return Listings.objects.filter(seller=self.request.user)
+        # return Listings.objects.all()
+        return Listings.objects.filter(seller=self.request.user)
     serializer_class = ListingsSerializer
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)

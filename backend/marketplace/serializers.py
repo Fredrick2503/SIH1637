@@ -106,6 +106,7 @@ class ListingsSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data=super().to_representation(instance)
         # send_sse_event({"message": "A new update is available!"})
+        print(data)
         data['produce']=str(Produce.objects.get(id=data.get('produce')))
         return data
 

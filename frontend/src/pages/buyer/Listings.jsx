@@ -10,7 +10,11 @@ import Header from "../../components/Header";
 export default function Listings() {
   const [listings, setlistings] = useState(null);
   useEffect(() => {
-    setlistings(resource.getlistings());
+    // setlistings([]);
+    resource.getlistings().then((res) => {
+      console.log(res);})
+    
+    setlistings([]);
   }, []);
   return (
     <div
@@ -37,9 +41,7 @@ export default function Listings() {
 
         <div className="  w-full  grid grid-cols-2 gap-x-1 md:grid-cols-4 lg:grid-cols-8 lg:gap-4 px-3  ">
           {listings ? (
-            listings.map((listing) => (
-              <ListingCard listing={listing} />
-            ))
+            listings?.map((listing) => <ListingCard listing={listing} />)
           ) : (
             <>No listing Found</>
           )}
@@ -50,29 +52,45 @@ export default function Listings() {
   );
 }
 
+export const ListingCard = ({ listing, className }) => {
+  console.log(listing);
 
-export const ListingCard = ({listing,className})=>{
-  return(
-    <Link to={`/marketspace/listings/${listing.id}`} className={"snap-start mt-2 "+className} >
-              <div className="w-full flex flex-col items-center justify-between rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.3)]  ">
-                <img src={crrot} className="rounded-t-xl aspect-square " />
-                <div className="w-full h-fit flex flex-col items-start justify-evenly px-3 pb-3 ">
-                  <h1 className="text-[17px] font-medium">
-                    {listing.produce.length > 10
-                      ? listing.produce.substring(0, 10) + " ..."
-                      : listing.produce}
-                  </h1>
-                  <h1 className="text-sm font-medium">
-                    ₹{listing.AskPrice}/{listing.metrics}
-                  </h1>
-                  <p className="text-sm font-light">Fresh and fresh</p>
-                  <button
-                    type="submit"
-                    className="bg-black text-cyan-50 px-3 py-2 rounded-md mt-1.5 w-full "
-                  >
-                    View Deatils
-                  </button>
-                </div>
-              </div></Link>
-  )
-}
+  if (listing != null) {
+    return (
+      <Link
+        to={`/marketspace/listings/${listing.id}`}
+        className={"snap-start mt-2 " + className}
+      >
+        <div className="w-full flex flex-col items-center justify-between rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.3)]  ">
+          <img src={crrot} className="rounded-t-xl aspect-square " />
+          <div className="w-full h-fit flex flex-col items-start justify-evenly px-3 pb-3 ">
+            <h1 className="text-[17px] font-medium">
+              {listing.produce.length > 10
+                ? listing.produce.substring(0, 10) + " ..."
+                : listing.produce}
+            </h1>
+            <h1 className="text-sm font-medium">
+              ₹{listing.AskPrice}/{listing.metrics}
+            </h1>
+            <p className="text-sm font-light">{`Qty: ${listing.Qty_available}`}</p>
+            <button
+              type="submit"
+              className="bg-black text-cyan-50 px-3 py-2 rounded-md mt-1.5 w-full "
+            >
+              View Deatils
+            </button>
+          </div>
+        </div>
+      </Link>
+    );
+  } else {
+    return (
+      <div className="w-full flex flex-col items-center justify-between rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.3)]  ">
+        <img src={crrot} className="rounded-t-xl aspect-square " />
+        <div className="w-full h-fit flex flex-col items-start justify-evenly px-3 pb-3 ">
+          <h1 className="text-[17px] font-medium">No Listings Found</h1>
+        </div>
+      </div>
+    );
+  }
+};

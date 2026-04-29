@@ -26,15 +26,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     BUYER="buyer"
     
     USER_TYPE_CHOICES = [
-        (PRODUCER, 'Producer'),
-        (BUYER, 'Buyer'),
+        (PRODUCER, 'producer'),
+        (BUYER, 'buyer'),
     ]
     INDIVIDUAL="individual"
     ORGANISATION="organisation"
     USER_CATEGORY=[
-        (INDIVIDUAL,"Individual"),(ORGANISATION,"Organisation")
+        (INDIVIDUAL,"individual"),(ORGANISATION,"organisation")
     ]
-    phone_number = models.CharField(max_length=20, unique=False)
+    phone_number = models.CharField(max_length=20, unique=False,null=True,blank=True)
     email = models.EmailField(unique=True,primary_key=True)
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES,null=True)
     user_category=models.CharField(max_length=25,choices=USER_CATEGORY,null=True)

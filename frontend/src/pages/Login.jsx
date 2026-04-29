@@ -16,11 +16,12 @@ export default function Login() {
   const navigate=useNavigate();
   const onSubmit =async (e) => {
     e.preventDefault
-    const user= await auth.login(e).then(res=>{
-      console.log(res);
-      return res.data})
-    setlogin(user.user)
-    console.log(userData)
+    console.log(e);
+    
+    const user= await auth.login(e)
+    console.log(user);
+    
+    setlogin(user.user,{"access":user.access,"refresh":user.refresh})
     navigate("/buyer/home");
   };
   return (
@@ -42,11 +43,11 @@ export default function Login() {
         >
           <h1 className="font-bold">Login</h1>
           <div className="mt-5 flex flex-col justify-evenly w-[80%] md:w-[90%]">
-            <Input label={"Email"} avtr={msgsvg} register={register} name={"email"} />
+            <Input label={"Email"} avtr={msgsvg} {...register("email")} />
             <Input
               label={"Password"}
               avtr={passsvg}
-              register={register} name={"password"}
+              {...register("password")}
             />
             <button
               type="submit"

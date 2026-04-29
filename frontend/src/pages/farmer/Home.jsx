@@ -9,13 +9,16 @@ import { Link } from "react-router";
 import { ListingCard } from "../buyer/Listings";
 
 function FarmerHome() {
-  const [bids, setbids] = useState([]);
+  const [bids, setbids] = useState(null);
   const [transactions, settransactions] = useState([]);
+  const [listings, setlistings] = useState(null);
 
   useEffect(() => {
-    setbids(resource.getbids());
+    (async()=>{setbids(await resource.getbids());})();
     settransactions(resource.gettransactions());
+    (async()=>{setlistings(await resource.getmylistings());})()
     console.log(bids);
+    
   }, []);
   return (
     <div className="w-screen h-screen flex flex-col items-center relative overflow-y-auto ">
@@ -63,83 +66,12 @@ function FarmerHome() {
                     status={bid.status}
                   />
                   ))} */}
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
-              <ListingCard
-                className={"snap-center "}
-                listing={{
-                  id: "330e0308-f8ff-4255-936c-f9fd92844f59",
-                  AskPrice: "200.00",
-                  metrics: "Q",
-                  Qty_available: "10.00",
-                  seller: "admin@nhce.edu",
-                  produce: "Rice-sona masuri",
-                }}
-              />
+                  {listings!=null?listings.map((listing) => (
+                    <ListingCard
+                    className={"snap-center "}
+                    listing={listing}
+                  />
+                  )):<ListingCard className={"snap-center "} listing={null} />}
             </div>
           </div>
           <div className="w-full  px-3 py-2 flex flex-col justify-center items-center border-y-1  border-gray-300 mt-3 md:h-[100%] ">
@@ -150,14 +82,14 @@ function FarmerHome() {
               </Link>
             </div>
             <div className="w-[100%] py-2 flex flex-col px-2 gap-2 items-center h-[300px] overflow-scroll snap-mandatory snap-y scroll-pt-2 overscroll-auto">
-              {bids.map((bid) => (
+              {bids && bids.map((bid) => (
                 <Card
                   className=" snap-start "
-                  label={bid.listing.produce}
+                  label={bid.produce}
                   info_fields={[
                     {
                       key: "Quantity",
-                      value: `${bid.quantity} ${bid.listing.metrics}`,
+                      value: `${bid.quantity} ${bid.metrics}`,
                       className: "text-sm",
                     },
                     {
@@ -178,7 +110,7 @@ function FarmerHome() {
           </div>
           <div className="w-full  px-3 py-2 flex flex-col  justify-center items-center border-y-1  border-gray-300 md:h-[100%] md:mt-3 ">
             <div className="w-full flex flex-row gap-2 justify-between px-3 py-2 ">
-              <h1 className="font-medium">Transactions</h1>
+              <h1 className="font-medium">Orders</h1>
               <Link to="/dashboard/transactions" className="font-medium">
                 Veiw all
               </Link>
@@ -228,9 +160,9 @@ const ProfileCard = () => {
             className="w-[15%] max-w-[70px] mr-3"
           />
           <div className="flex flex-col justify-evenly items-start">
-            <h1 className="text-xl font-medium">Welcome Back,</h1>
-            <p>
-              {userData.first_name} {userData.last_name}
+            <h1 className="text-sm font-normal">Welcome Back,</h1>
+            <p className="text-2xl font-medium">
+              {String(userData.first_name).toUpperCase()} {String(userData.last_name).toUpperCase()}
             </p>
           </div>
         </div>

@@ -12,8 +12,8 @@ function AuthLayout({ Authreq = true }) {
 
   return !((IsAuthenticated && !Authreq) || (!IsAuthenticated && Authreq)) ? (
     <Outlet />
-  ) : (
-    <Navigate to="/" />
+  ) : Authreq?<Navigate to="/" />:(
+    <Navigate to="/dashboard" />
   );
 }
 

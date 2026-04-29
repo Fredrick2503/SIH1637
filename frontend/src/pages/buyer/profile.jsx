@@ -9,7 +9,7 @@ import phone from "../../assets/svg/phone.svg";
 import StatusBadge from "../../components/StatusBadge";
 import Edit from "../../assets/svg/edit.svg"
 import { Link } from "react-router";
-function profile() {
+function Buyerprofile() {
   return (
     <div className="w-screen h-screen">
       <Header />
@@ -28,6 +28,7 @@ function profile() {
             <h1 className=" text-xl font-semibold" >Buyer Stats</h1>
 
             <table className="w-full text-sm ">
+              <tbody>
               <tr className="w-full my-2" >
                 <td>
                   Total Orders
@@ -60,6 +61,7 @@ function profile() {
                   1234
                 </td>
               </tr>
+              </tbody>
             </table>
           </article>
         <article className="shadow-[0px_0px_5px_rgba(0,0,0,0.19)] rounded-xl p-4 md:col-span-3 w-full " >
@@ -126,7 +128,7 @@ function profile() {
   );
 }
 
-export default profile;
+export default Buyerprofile;
 
 const Hero = () => {
   return (
